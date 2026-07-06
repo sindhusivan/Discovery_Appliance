@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TAO Discovery | Dependency Graph</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<style>
+:root{--navy:#0D2461;--blue:#1155CC;--blue-m:#2B6BE0;--cyan:#0099CC;--bg:#F5F7FB;--bg-c:#FFFFFF;--bg-sb:#FFFFFF;--bg-hdr:#FFFFFF;--bg-in:#F8FAFC;--bg-hv:#F0F4FF;--bg-alt:#F8FAFC;--tx:#0D1B3E;--tx2:#4A5568;--tx3:#8896A7;--bd:#E2E8F0;--bd-f:#2B6BE0;--bd-s:#CBD5E0;--sh:0 1px 3px rgba(0,0,0,.06);--shm:0 4px 12px rgba(0,0,0,.08);--shb:0 4px 16px rgba(43,107,224,.22);--ok:#059669;--ok-bg:#ECFDF5;--ok-b:#A7F3D0;--warn:#D97706;--warn-bg:#FFFBEB;--warn-b:#FDE68A;--err:#DC2626;--err-bg:#FEF2F2;--err-b:#FECACA;--inf:#2563EB;--inf-bg:#EFF6FF;--inf-b:#BFDBFE;--off:#64748B;--off-bg:#F1F5F9;--off-b:#CBD5E0;--sw:240px;--hh:60px;--r:10px;--rs:6px;--rl:14px;}
+[data-theme="dark"]{--bg:#0A0F1E;--bg-c:#111827;--bg-sb:#0D1525;--bg-hdr:#0D1525;--bg-in:#1A2337;--bg-hv:#1E2D4A;--bg-alt:#141E33;--tx:#E8EEFF;--tx2:#94A3B8;--tx3:#64748B;--bd:#1E2D4A;--bd-s:#2A3B56;--sh:0 1px 3px rgba(0,0,0,.3);--shm:0 4px 12px rgba(0,0,0,.4);--ok-bg:rgba(5,150,105,.1);--ok-b:rgba(167,243,208,.2);--warn-bg:rgba(217,119,6,.1);--warn-b:rgba(253,230,138,.2);--err-bg:rgba(220,38,38,.1);--err-b:rgba(254,202,202,.2);--inf-bg:rgba(37,99,235,.1);--inf-b:rgba(191,219,254,.2);--off-bg:rgba(100,116,139,.1);--off-b:rgba(100,116,139,.2);--off:#94A3B8;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--tx);font-size:14px;line-height:1.6;transition:background .3s,color .3s;overflow:hidden;height:100vh;}
+.app{display:grid;grid-template-columns:var(--sw) 1fr;grid-template-rows:var(--hh) 1fr;height:100vh;}
+.hdr{grid-column:1/-1;height:var(--hh);background:var(--bg-hdr);border-bottom:1px solid var(--bd);display:flex;align-items:center;padding:0 20px;gap:14px;z-index:100;box-shadow:var(--sh);}
+.logo{display:flex;align-items:center;gap:9px;text-decoration:none;}
+.lm{width:32px;height:32px;background:linear-gradient(135deg,var(--navy),var(--blue-m));border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#fff;flex-shrink:0;}
+.ln{font-size:14px;font-weight:700;color:var(--navy);}[data-theme="dark"] .ln{color:var(--tx);}
+.lp{font-size:10px;color:var(--tx3);letter-spacing:.5px;}
+.hdiv{width:1px;height:24px;background:var(--bd);}
+.hdr-title{font-size:13px;font-weight:600;color:var(--tx2);}
+.hdr-r{margin-left:auto;display:flex;align-items:center;gap:8px;}
+.sys-ok{display:flex;align-items:center;gap:5px;padding:4px 10px;background:var(--ok-bg);border:1px solid var(--ok-b);border-radius:20px;font-size:11px;font-weight:600;color:var(--ok);}
+.sdot{width:6px;height:6px;border-radius:50%;background:var(--ok);animation:pd 2s ease-in-out infinite;}
+@keyframes pd{0%,100%{opacity:1}50%{opacity:.3}}
+.ibtn{width:32px;height:32px;border-radius:var(--rs);border:1px solid var(--bd);background:var(--bg-c);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;transition:all .2s;color:var(--tx2);text-decoration:none;}
+.ibtn:hover{border-color:var(--bd-f);background:var(--bg-hv);}
+.clock{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--tx3);padding:4px 8px;background:var(--bg-alt);border-radius:var(--rs);border:1px solid var(--bd);}
+
+/* NAV */
+.nav-sb{grid-row:2;background:var(--bg-sb);border-right:1px solid var(--bd);display:flex;flex-direction:column;overflow:hidden;}
+.nav-sec{padding:16px 0 6px;}
+.nav-lbl{padding:0 14px 5px;font-size:10px;font-weight:700;color:var(--tx3);letter-spacing:1.5px;text-transform:uppercase;}
+.nav-a{display:flex;align-items:center;gap:9px;padding:8px 14px;margin:1px 7px;border-radius:var(--rs);text-decoration:none;font-size:13px;font-weight:500;color:var(--tx2);transition:all .15s;}
+.nav-a:hover{background:var(--bg-hv);color:var(--blue);}
+.nav-a.act{background:linear-gradient(135deg,rgba(17,85,204,.1),rgba(43,107,224,.07));color:var(--blue);font-weight:600;border-left:3px solid var(--blue);margin-left:7px;padding-left:11px;}
+.nav-ic{width:16px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
+.nbdg{margin-left:auto;padding:1px 5px;background:var(--inf-bg);border:1px solid var(--inf-b);border-radius:8px;font-size:10px;font-weight:600;color:var(--inf);font-family:'JetBrains Mono',monospace;}
+.nbdg.lv{background:var(--ok-bg);border-color:var(--ok-b);color:var(--ok);}
+.env-card{margin:8px 10px 12px;padding:14px;background:linear-gradient(135deg,var(--navy),var(--blue-m));border-radius:var(--r);color:#fff;}
+.ec-t{font-size:9px;font-weight:700;opacity:.6;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px;}
+.ec-row{display:flex;justify-content:space-between;margin-bottom:4px;}
+.ec-l{font-size:11px;opacity:.7;}
+.ec-v{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;}
+.nav-ft{padding:12px 14px;border-top:1px solid var(--bd);margin-top:auto;flex-shrink:0;}
+.ft-b{font-size:10px;color:var(--tx3);font-weight:500;}
+.ft-v{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--tx3);}
+
+/* GRAPH AREA */
+.graph-area{grid-row:2;position:relative;overflow:hidden;background:var(--bg);}
+
+/* CONTROLS TOOLBAR */
+.toolbar{position:absolute;top:16px;left:16px;z-index:50;display:flex;gap:8px;flex-wrap:wrap;}
+.ctrl-card{background:var(--bg-c);border:1px solid var(--bd);border-radius:var(--r);padding:10px 14px;box-shadow:var(--shm);display:flex;gap:6px;align-items:center;}
+.ctrl-lbl{font-size:11px;font-weight:600;color:var(--tx3);letter-spacing:.5px;margin-right:4px;}
+.ctrl-btn{padding:5px 10px;border-radius:var(--rs);border:1px solid var(--bd);background:var(--bg-in);font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;color:var(--tx2);font-family:'Plus Jakarta Sans',sans-serif;}
+.ctrl-btn:hover{border-color:var(--bd-f);color:var(--blue);background:var(--bg-hv);}
+.ctrl-btn.act{background:var(--blue);border-color:var(--blue);color:#fff;}
+.ctrl-sep{width:1px;height:20px;background:var(--bd);}
+.search-ctrl{background:var(--bg-c);border:1px solid var(--bd);border-radius:var(--r);padding:8px 12px;box-shadow:var(--shm);display:flex;align-items:center;gap:7px;}
+.search-ctrl input{border:none;background:transparent;outline:none;font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;color:var(--tx);width:180px;}
+.search-ctrl input::placeholder{color:var(--tx3);}
+
+/* LEGEND */
+.legend{position:absolute;bottom:20px;left:16px;z-index:50;background:var(--bg-c);border:1px solid var(--bd);border-radius:var(--r);padding:12px 14px;box-shadow:var(--shm);}
+.leg-title{font-size:10px;font-weight:700;color:var(--tx3);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;}
+.leg-row{display:flex;align-items:center;gap:8px;margin-bottom:5px;font-size:12px;color:var(--tx2);}
+.leg-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0;}
+.leg-line{width:24px;height:2px;flex-shrink:0;position:relative;}
+.leg-arrow{position:absolute;right:-2px;top:-4px;font-size:10px;}
+
+/* STATS BAR */
+.stats-bar{position:absolute;top:16px;right:16px;z-index:50;display:flex;gap:8px;}
+.stat-pill{background:var(--bg-c);border:1px solid var(--bd);border-radius:var(--r);padding:8px 14px;box-shadow:var(--shm);text-align:center;}
+.sp-val{font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:800;color:var(--tx);}
+.sp-lbl{font-size:10px;color:var(--tx3);font-weight:600;letter-spacing:.5px;}
+
+/* NODE DETAIL PANEL */
+.node-detail{position:absolute;right:0;top:0;bottom:0;width:300px;background:var(--bg-c);border-left:1px solid var(--bd);transform:translateX(100%);transition:transform .3s;z-index:60;display:flex;flex-direction:column;box-shadow:var(--shm);}
+.node-detail.open{transform:translateX(0);}
+.nd-hdr{padding:14px 16px;border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:10px;}
+.nd-title{font-size:13px;font-weight:700;color:var(--tx);flex:1;}
+.nd-close{cursor:pointer;color:var(--tx3);font-size:18px;background:none;border:none;}
+.nd-scroll{overflow-y:auto;flex:1;padding:14px;}
+.nd-name{font-size:15px;font-weight:800;color:var(--tx);margin-bottom:4px;}
+.nd-ip{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--tx3);margin-bottom:10px;}
+.nd-state{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;margin-bottom:12px;}
+.ns-on{background:var(--ok-bg);border:1px solid var(--ok-b);color:var(--ok);}
+.ns-off{background:var(--off-bg);border:1px solid var(--off-b);color:var(--off);}
+.nd-kv{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--bd);font-size:12px;}
+.nd-k{color:var(--tx3);}
+.nd-v{font-weight:600;color:var(--tx);font-family:'JetBrains Mono',monospace;}
+.nd-dep-title{font-size:11px;font-weight:700;color:var(--tx3);letter-spacing:.8px;text-transform:uppercase;margin:12px 0 6px;}
+.nd-dep{display:flex;align-items:center;gap:6px;padding:6px 8px;border:1px solid var(--bd);border-radius:var(--rs);margin-bottom:4px;font-size:11px;background:var(--bg-in);}
+.nd-dep-port{font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--blue);}
+.nd-dep-flows{margin-left:auto;font-family:'JetBrains Mono',monospace;color:var(--ok);font-weight:700;}
+
+/* EMPTY STATE */
+.graph-empty{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--tx3);}
+.ge-ic{font-size:64px;margin-bottom:16px;opacity:.3;}
+.ge-t{font-size:16px;font-weight:600;margin-bottom:6px;}
+.ge-s{font-size:13px;margin-bottom:20px;}
+
+/* SVG Styles */
+.node circle{cursor:pointer;transition:all .2s;}
+.node circle:hover{filter:brightness(1.1);}
+.node text{pointer-events:none;font-family:'Plus Jakarta Sans',sans-serif;}
+.link{fill:none;stroke-width:1.5;}
+.link.highlighted{stroke-width:3;}
+.link-label{font-family:'JetBrains Mono',monospace;font-size:10px;pointer-events:none;}
+.tooltip{position:absolute;background:var(--bg-c);border:1px solid var(--bd);border-radius:var(--rs);padding:8px 12px;box-shadow:var(--shm);pointer-events:none;font-size:12px;z-index:200;opacity:0;transition:opacity .2s;max-width:200px;}
+.tooltip.show{opacity:1;}
+
+.badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600;}
+.b-ok{background:var(--ok-bg);border:1px solid var(--ok-b);color:var(--ok);}
+.b-off{background:var(--off-bg);border:1px solid var(--off-b);color:var(--off);}
+.b-pri{background:linear-gradient(135deg,var(--blue),var(--blue-m));color:#fff;box-shadow:var(--shb);}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:var(--rs);font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;border:none;transition:all .2s;text-decoration:none;}
+.btn-pri{background:linear-gradient(135deg,var(--blue),var(--blue-m));color:#fff;}
+.btn-pri:hover{transform:translateY(-1px);}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- HEADER -->
+<header class="hdr">
+  <a class="logo" href="/dashboard"><div class="lm">T</div><div><div class="ln">TAO Digital Solutions</div><div class="lp">Discovery Platform</div></div></a>
+  <div class="hdiv"></div>
+  <button onclick="toggleDepNav()" style="width:30px;height:30px;border-radius:5px;border:1px solid var(--bd);background:var(--bg-c);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0" title="Toggle sidebar">☰</button><span class="hdr-title">Application Dependency Graph</span>
+  <div class="hdr-r">
+    <div class="sys-ok"><div class="sdot"></div>Online</div>
+    <div class="clock" id="clock">\u2014</div>
+    <a href="/dashboard" class="ibtn" title="Environment Tree">\ud83c\udfe2</a>
+    <a href="/export" class="ibtn" title="Export Reports">\ud83d\udce5</a>
+    <button class="ibtn" onclick="toggleTheme()"><span id="ti">\ud83c\udf19</span></button>
+  </div>
+</header>
+
+<!-- NAV -->
+<aside class="nav-sb">
+  <div class="nav-sec">
+    <div class="nav-lbl">Platform</div>
+    <a href="/config" class="nav-a"><span class="nav-ic">\u2699\ufe0f</span>Configuration</a>
+    <a href="/dashboard" class="nav-a"><span class="nav-ic">\ud83c\udfe2</span>Environment</a>
+    <a href="/dependencies" class="nav-a act"><span class="nav-ic">\ud83d\udd17</span>Dependencies</a>
+    <a href="/export" class="nav-a"><span class="nav-ic">\ud83d\udce5</span>Export Reports</a>
+  </div>
+  <div class="nav-sec">
+    <div class="nav-lbl">Graph Controls</div>
+    <div class="nav-a" style="cursor:default"><span class="nav-ic">\ud83d\udd35</span>Powered On VMs</div>
+    <div class="nav-a" style="cursor:default"><span class="nav-ic">\u26ab</span>Powered Off VMs</div>
+    <div class="nav-a" style="cursor:default"><span class="nav-ic">\u2192</span>TCP Flow</div>
+    <div class="nav-a" style="cursor:default"><span class="nav-ic">\u21e2</span>UDP Flow</div>
+  </div>
+  <div class="env-card">
+    <div class="ec-t">Graph Statistics</div>
+    <div class="ec-row"><span class="ec-l">VM Nodes</span><span class="ec-v" id="node-count">\u2014</span></div>
+    <div class="ec-row"><span class="ec-l">Connections</span><span class="ec-v" id="link-count">\u2014</span></div>
+    <div class="ec-row"><span class="ec-l">Total Flows</span><span class="ec-v" id="flow-count">\u2014</span></div>
+    <div class="ec-row"><span class="ec-l">Unique Ports</span><span class="ec-v" id="port-count">\u2014</span></div>
+  </div>
+  <div class="nav-ft">
+    <div class="ft-b">TAO Digital Solutions</div>
+    <div class="ft-v">Discovery Platform v1.0</div>
+  </div>
+</aside>
+
+<!-- GRAPH -->
+<div class="graph-area" id="graph-area">
+
+  <!-- TOOLBAR -->
+  <div class="toolbar">
+    <div class="ctrl-card">
+      <span class="ctrl-lbl">Layout</span>
+      <button class="ctrl-btn act" id="btn-force" onclick="setLayout('force')">Force</button>
+      <button class="ctrl-btn" id="btn-radial" onclick="setLayout('radial')">Radial</button>
+    </div>
+    <div class="ctrl-card">
+      <span class="ctrl-lbl">Filter</span>
+      <button class="ctrl-btn act" id="btn-all" onclick="setFilter('all')">All</button>
+      <button class="ctrl-btn" id="btn-tcp" onclick="setFilter('TCP')">TCP</button>
+      <button class="ctrl-btn" id="btn-udp" onclick="setFilter('UDP')">UDP</button>
+      <div class="ctrl-sep"></div>
+      <button class="ctrl-btn" onclick="resetGraph()">\u21ba Reset</button>
+    </div>
+    <div class="search-ctrl">
+      <span style="color:var(--tx3)">\ud83d\udd0d</span>
+      <input type="text" id="graph-search" placeholder="Highlight VM..." oninput="highlightVM(this.value)">
+    </div>
+  </div>
+
+  <!-- STATS BAR -->
+  <div class="stats-bar">
+    <div class="stat-pill"><div class="sp-val" id="s-nodes">\u2014</div><div class="sp-lbl">VMs</div></div>
+    <div class="stat-pill"><div class="sp-val" id="s-edges">\u2014</div><div class="sp-lbl">Connections</div></div>
+    <div class="stat-pill"><div class="sp-val" id="s-flows">\u2014</div><div class="sp-lbl">Total Flows</div></div>
+  </div>
+
+  <!-- LEGEND -->
+  <div class="legend">
+    <div class="leg-title">Legend</div>
+    <div class="leg-row"><div class="leg-dot" style="background:#2B6BE0"></div>Powered On VM</div>
+    <div class="leg-row"><div class="leg-dot" style="background:#94A3B8"></div>Powered Off VM</div>
+    <div class="leg-row"><div class="leg-dot" style="background:#10B981"></div>High Flow Volume</div>
+    <div class="leg-row">
+      <div class="leg-line" style="background:#2B6BE0"><span class="leg-arrow" style="color:#2B6BE0">\u25b6</span></div>
+      TCP Connection
+    </div>
+    <div class="leg-row">
+      <div class="leg-line" style="background:#D97706;background:repeating-linear-gradient(90deg,#D97706,#D97706 4px,transparent 4px,transparent 8px)"><span class="leg-arrow" style="color:#D97706">\u25b6</span></div>
+      UDP Connection
+    </div>
+    <div style="font-size:10px;color:var(--tx3);margin-top:8px;border-top:1px solid var(--bd);padding-top:6px">Scroll to zoom \u00b7 Drag to pan<br>Click node for details</div>
+  </div>
+
+  <!-- GRAPH SVG -->
+  <svg id="graph-svg" style="width:100%;height:100%;"></svg>
+
+  <!-- TOOLTIP -->
+  <div class="tooltip" id="tooltip"></div>
+
+  <!-- EMPTY STATE (hidden when graph loads) -->
+  <div class="graph-empty" id="graph-empty" style="display:none">
+    <div class="ge-ic">\ud83d\udd17</div>
+    <div class="ge-t">No dependency data yet</div>
+    <div class="ge-s">Generate VM-to-VM traffic and ensure NetFlow is enabled on your vDS portgroups</div>
+    <a href="/dashboard" class="btn btn-pri">\u2190 Back to Dashboard</a>
+  </div>
+</div>
+
+<!-- NODE DETAIL PANEL -->
+<div class="node-detail" id="node-detail">
+  <div class="nd-hdr">
+    <div class="nd-title">VM Details</div>
+    <button class="nd-close" onclick="closeNodeDetail()">\u00d7</button>
+  </div>
+  <div class="nd-scroll" id="nd-scroll"></div>
+</div>
+
+</div><!-- app -->
+
+<script>
+/* \u2500\u2500 THEME \u2500\u2500 */
+const th = localStorage.getItem('tao-theme') || 'light';
+document.documentElement.setAttribute('data-theme', th);
+document.getElementById('ti').textContent = th === 'dark' ? '\u2600\ufe0f' : '\ud83c\udf19';
+function toggleTheme() {
+  const c = document.documentElement.getAttribute('data-theme');
+  const n = c === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', n);
+  localStorage.setItem('tao-theme', n);
+  document.getElementById('ti').textContent = n === 'dark' ? '\u2600\ufe0f' : '\ud83c\udf19';
+  initGraph();
+}
+function tick() { document.getElementById('clock').textContent = new Date().toUTCString().slice(0, -4).replace('GMT', 'UTC'); }
+setInterval(tick, 1000); tick();
+
+/* \u2500\u2500 COUNTS \u2500\u2500 */
+async function fetchCounts() {
+  try {
+    const d = await (await fetch('/api/db_counts')).json();
+  } catch (e) {}
+}
+fetchCounts();
+
+/* \u2500\u2500 GRAPH STATE \u2500\u2500 */
+let graphData = null;
+let simulation = null;
+let currentFilter = 'all';
+let currentLayout = 'force';
+let highlighted = null;
+let svg, g, width, height;
+
+/* \u2500\u2500 COLOUR HELPERS \u2500\u2500 */
+function isDark() { return document.documentElement.getAttribute('data-theme') === 'dark'; }
+function nodeColor(d) {
+  if (d.power_state === 'poweredOn') return '#2B6BE0';
+  return isDark() ? '#475569' : '#94A3B8';
+}
+function nodeStroke(d) { return d.power_state === 'poweredOn' ? '#1155CC' : (isDark() ? '#334155' : '#CBD5E0'); }
+function linkColor(d) { return portColor(d.port); }
+function textColor() { return isDark() ? '#E8EEFF' : '#0D1B3E'; }
+function bgColor() { return isDark() ? '#0A0F1E' : '#F5F7FB'; }
+
+/* \u2500\u2500 LOAD DATA \u2500\u2500 */
+async function loadGraph() {
+  try {
+    const d = await (await fetch('/api/graph')).json();
+    if (!d.nodes || d.nodes.length === 0) {
+      document.getElementById('graph-empty').style.display = 'flex';
+      return;
+    }
+    graphData = d;
+    updateStats(d);
+    initGraph();
+
+    // Check for highlight param
+    const params = new URLSearchParams(window.location.search);
+    const hl = params.get('highlight');
+    if (hl) {
+      document.getElementById('graph-search').value = hl;
+      setTimeout(() => highlightVM(hl), 800);
+    }
+  } catch (e) {
+    document.getElementById('graph-empty').style.display = 'flex';
+    document.getElementById('graph-empty').querySelector('.ge-t').textContent = 'Failed to load graph';
+    document.getElementById('graph-empty').querySelector('.ge-s').textContent = e.message;
+  }
+}
+
+function updateStats(d) {
+  const totalFlows = d.links.reduce((a, l) => a + (l.flow_count || 1), 0);
+  const ports = new Set(d.links.map(l => l.port));
+  document.getElementById('node-count').textContent = d.nodes.length;
+  document.getElementById('link-count').textContent = d.links.length;
+  document.getElementById('flow-count').textContent = totalFlows;
+  document.getElementById('port-count').textContent = ports.size;
+  document.getElementById('s-nodes').textContent = d.nodes.length;
+  document.getElementById('s-edges').textContent = d.links.length;
+  document.getElementById('s-flows').textContent = totalFlows;
+}
+
+/* \u2500\u2500 GRAPH INIT \u2500\u2500 */
+function initGraph() {
+  if (!graphData) return;
+  document.getElementById('graph-svg').innerHTML = '';
+
+  const area = document.getElementById('graph-area');
+  width = area.clientWidth;
+  height = area.clientHeight;
+
+  svg = d3.select('#graph-svg')
+    .attr('width', width)
+    .attr('height', height);
+
+  // Arrow markers — one per unique port
+  const defs = svg.append('defs');
+  const uniquePorts = [...new Set(links.map(l => l.port))];
+  uniquePorts.forEach(port => {
+    defs.append('marker')
+      .attr('id', `arrow-port-${port}`)
+      .attr('viewBox', '0 -5 10 10')
+      .attr('refX', 24).attr('refY', 0)
+      .attr('markerWidth', 5).attr('markerHeight', 5)
+      .attr('orient', 'auto')
+      .append('path')
+      .attr('d', 'M0,-5L10,0L0,5')
+      .attr('fill', portColor(port));
+  });
+
+  const zoom = d3.zoom()
+    .scaleExtent([0.1, 4])
+    .on('zoom', e => g.attr('transform', e.transform));
+  svg.call(zoom);
+
+  g = svg.append('g');
+
+  // Filter links
+  const links = currentFilter === 'all'
+    ? graphData.links
+    : graphData.links.filter(l => l.protocol === currentFilter);
+
+  // Only show nodes that have connections
+  const connectedIds = new Set();
+  links.forEach(l => { connectedIds.add(l.source_id || l.source); connectedIds.add(l.target_id || l.target); });
+  const nodes = graphData.nodes.filter(n => connectedIds.has(n.id));
+
+  if (nodes.length === 0) {
+    document.getElementById('graph-empty').style.display = 'flex';
+    document.getElementById('graph-empty').querySelector('.ge-t').textContent = `No ${currentFilter === 'all' ? '' : currentFilter + ' '}connections to display`;
+    return;
+  }
+  document.getElementById('graph-empty').style.display = 'none';
+
+  // Compute link strength by flow count
+  const maxFlow = Math.max(...links.map(l => l.flow_count || 1));
+
+  // Force simulation
+  simulation = d3.forceSimulation(nodes)
+    .force('link', d3.forceLink(links).id(d => d.id).distance(d => {
+      const base = 120;
+      return base + (1 - (d.flow_count || 1) / maxFlow) * 80;
+    }).strength(0.5))
+    .force('charge', d3.forceManyBody().strength(-400))
+    .force('center', d3.forceCenter(width / 2, height / 2))
+    .force('collision', d3.forceCollide(30));
+
+  // Compute pair counts for arc spread
+  const pairMap = {};
+  links.forEach(l => {
+    const key = [l.source_id||l.source, l.target_id||l.target].sort().join('|');
+    pairMap[key] = (pairMap[key] || 0) + 1;
+  });
+  const pairIdx = {};
+  links.forEach(l => {
+    const key = [l.source_id||l.source, l.target_id||l.target].sort().join('|');
+    l._pairCount = pairMap[key];
+    l._pairIdx = pairIdx[key] || 0;
+    pairIdx[key] = l._pairIdx + 1;
+  });
+
+  // Draw arc links
+  const link = g.append('g').attr('class', 'links')
+    .selectAll('.link')
+    .data(links)
+    .enter().append('g');
+
+  const linkLine = link.append('path')
+    .attr('class', 'link')
+    .attr('fill', 'none')
+    .attr('stroke', d => portColor(d.port))
+    .attr('stroke-width', d => Math.max(1.5, Math.min(4, 1.5 + Math.log(d.flow_count || 1))))
+    .attr('stroke-dasharray', d => d.protocol === 'UDP' ? '5,3' : null)
+    .attr('marker-end', d => `url(#arrow-port-${d.port})`)
+    .attr('opacity', 0.75);
+
+  // Link port labels
+  const linkLabel = link.append('text')
+    .attr('class', 'link-label')
+    .attr('fill', d => portColor(d.port))
+    .attr('text-anchor', 'middle')
+    .attr('font-size', 10)
+    .attr('opacity', 0.9)
+    .text(d => `:${d.port}`);
+
+  // Draw nodes
+  const node = g.append('g').attr('class', 'nodes')
+    .selectAll('.node')
+    .data(nodes)
+    .enter().append('g')
+    .attr('class', 'node')
+    .call(d3.drag()
+      .on('start', dragStart)
+      .on('drag', dragged)
+      .on('end', dragEnd));
+
+  // Node shadow glow (for powered on)
+  node.filter(d => d.power_state === 'poweredOn')
+    .append('circle')
+    .attr('r', 22)
+    .attr('fill', '#2B6BE0')
+    .attr('opacity', 0.12);
+
+  // Node circles
+  const circles = node.append('circle')
+    .attr('r', d => {
+      const links_count = links.filter(l => (l.source.id || l.source) === d.id || (l.target.id || l.target) === d.id).length;
+      return 14 + Math.min(10, links_count * 2);
+    })
+    .attr('fill', d => nodeColor(d))
+    .attr('stroke', d => nodeStroke(d))
+    .attr('stroke-width', 2)
+    .on('click', (event, d) => { event.stopPropagation(); selectNode(d, links); })
+    .on('mouseover', (event, d) => showTooltip(event, d))
+    .on('mouseout', hideTooltip);
+
+  // Node icon (text center)
+  node.append('text')
+    .attr('text-anchor', 'middle')
+    .attr('dominant-baseline', 'central')
+    .attr('font-size', 12)
+    .text(d => d.power_state === 'poweredOn' ? '\ud83d\udcbb' : '\ud83d\udda5\ufe0f');
+
+  // Node labels
+  node.append('text')
+    .attr('text-anchor', 'middle')
+    .attr('dy', d => (14 + Math.min(10, links.filter(l => (l.source.id || l.source) === d.id || (l.target.id || l.target) === d.id).length * 2)) + 14)
+    .attr('font-size', 11)
+    .attr('font-weight', '600')
+    .attr('fill', textColor)
+    .attr('font-family', 'Plus Jakarta Sans, sans-serif')
+    .text(d => d.name.length > 16 ? d.name.slice(0, 14) + '\u2026' : d.name);
+
+  // IP sub-label
+  node.append('text')
+    .attr('text-anchor', 'middle')
+    .attr('dy', d => (14 + Math.min(10, links.filter(l => (l.source.id || l.source) === d.id || (l.target.id || l.target) === d.id).length * 2)) + 26)
+    .attr('font-size', 9)
+    .attr('fill', isDark() ? '#64748B' : '#8896A7')
+    .attr('font-family', 'JetBrains Mono, monospace')
+    .text(d => d.ip || '');
+
+  // Tick
+  function arcPath(d) {
+    const sx = d.source.x, sy = d.source.y;
+    const tx = d.target.x, ty = d.target.y;
+    const dx = tx - sx, dy = ty - sy;
+    const dr = Math.sqrt(dx*dx + dy*dy);
+    if (dr === 0) return `M${sx},${sy}`;
+    const spread = (d._pairCount > 1) ? (d._pairIdx - (d._pairCount-1)/2) * 60 : 0;
+    const sweep = spread >= 0 ? 1 : 0;
+    const absSpr = Math.abs(spread) || dr * 0.3;
+    return `M${sx},${sy} A${absSpr},${absSpr} 0 0,${sweep} ${tx},${ty}`;
+  }
+
+  simulation.on('tick', () => {
+    linkLine.attr('d', arcPath);
+    linkLabel
+      .attr('x', d => (d.source.x + d.target.x) / 2)
+      .attr('y', d => (d.source.y + d.target.y) / 2 - 6);
+    node.attr('transform', d => `translate(${d.x},${d.y})`);
+  });
+
+  // Click outside to deselect
+  svg.on('click', () => { clearHighlight(); closeNodeDetail(); });
+}
+
+/* \u2500\u2500 DRAG \u2500\u2500 */
+function dragStart(event, d) { if (!event.active) simulation.alphaTarget(0.3).restart(); d.fx = d.x; d.fy = d.y; }
+function dragged(event, d) { d.fx = event.x; d.fy = event.y; }
+function dragEnd(event, d) { if (!event.active) simulation.alphaTarget(0); d.fx = null; d.fy = null; }
+
+/* \u2500\u2500 TOOLTIP \u2500\u2500 */
+function showTooltip(event, d) {
+  const tt = document.getElementById('tooltip');
+  tt.innerHTML = `<strong>${d.name}</strong><br><span style="color:var(--tx3);font-family:JetBrains Mono,monospace;font-size:11px">${d.ip || '\u2014'}</span><br><span style="color:${d.power_state === 'poweredOn' ? 'var(--ok)' : 'var(--off)'}">\u25cf ${d.power_state}</span>`;
+  tt.style.left = (event.pageX + 12) + 'px';
+  tt.style.top = (event.pageY - 10) + 'px';
+  tt.classList.add('show');
+}
+function hideTooltip() { document.getElementById('tooltip').classList.remove('show'); }
+
+/* \u2500\u2500 NODE SELECTION \u2500\u2500 */
+function selectNode(d, links) {
+  hideTooltip();
+  highlighted = d.id;
+
+  // Highlight connected links and nodes
+  g.selectAll('.node circle')
+    .attr('opacity', n => {
+      const connected = links.some(l =>
+        (l.source.id || l.source) === d.id && (l.target.id || l.target) === n.id ||
+        (l.target.id || l.target) === d.id && (l.source.id || l.source) === n.id ||
+        n.id === d.id
+      );
+      return connected ? 1 : 0.2;
+    });
+
+  g.selectAll('.link')
+    .attr('opacity', l => {
+      const connected = (l.source.id || l.source) === d.id || (l.target.id || l.target) === d.id;
+      return connected ? 1 : 0.05;
+    })
+    .attr('stroke-width', l => {
+      const connected = (l.source.id || l.source) === d.id || (l.target.id || l.target) === d.id;
+      return connected ? Math.max(2, Math.min(5, 2 + Math.log(l.flow_count || 1))) : 1;
+    });
+
+  g.selectAll('.link-label')
+    .attr('opacity', l => ((l.source.id || l.source) === d.id || (l.target.id || l.target) === d.id) ? 1 : 0);
+
+  g.selectAll('.node text').attr('opacity', n => {
+    const connected = links.some(l =>
+      (l.source.id || l.source) === d.id && (l.target.id || l.target) === n.id ||
+      (l.target.id || l.target) === d.id && (l.source.id || l.source) === n.id ||
+      n.id === d.id
+    );
+    return connected ? 1 : 0.2;
+  });
+
+  // Get connections for detail panel
+  const outgoing = links.filter(l => (l.source.id || l.source) === d.id);
+  const incoming = links.filter(l => (l.target.id || l.target) === d.id);
+
+  document.getElementById('nd-scroll').innerHTML = `
+    <div class="nd-name">\ud83d\udcbb ${d.name}</div>
+    <div class="nd-ip">${d.ip || 'No IP assigned'}</div>
+    <div class="nd-state ${d.power_state === 'poweredOn' ? 'ns-on' : 'ns-off'}">${d.power_state === 'poweredOn' ? '\u25cf Powered On' : '\u25cb Powered Off'}</div>
+    <div class="nd-kv"><span class="nd-k">vCPU</span><span class="nd-v">${d.vcpu || '\u2014'}</span></div>
+    <div class="nd-kv"><span class="nd-k">RAM</span><span class="nd-v">${d.ram_gb ? parseFloat(d.ram_gb).toFixed(1)+'GB' : '\u2014'}</span></div>
+    <div class="nd-kv"><span class="nd-k">OS</span><span class="nd-v" style="font-family:'Plus Jakarta Sans',sans-serif;font-size:11px">${d.guest_os || '\u2014'}</span></div>
+    <div class="nd-kv"><span class="nd-k">Connections Out</span><span class="nd-v" style="color:var(--ok)">${outgoing.length}</span></div>
+    <div class="nd-kv"><span class="nd-k">Connections In</span><span class="nd-v" style="color:var(--blue)">${incoming.length}</span></div>
+    ${outgoing.length > 0 ? `<div class="nd-dep-title">Outgoing (${outgoing.length})</div>` +
+      outgoing.map(l => {
+        const tgt = graphData.nodes.find(n => n.id === (l.target.id || l.target));
+        return `<div class="nd-dep">\u2192 <span>${tgt?.name || l.target}</span><span class="nd-dep-port">:${l.port} ${l.protocol}</span><span class="nd-dep-flows">${l.flow_count}</span></div>`;
+      }).join('') : ''}
+    ${incoming.length > 0 ? `<div class="nd-dep-title">Incoming (${incoming.length})</div>` +
+      incoming.map(l => {
+        const src = graphData.nodes.find(n => n.id === (l.source.id || l.source));
+        return `<div class="nd-dep"><span>${src?.name || l.source}</span> \u2192 <span class="nd-dep-port">:${l.port} ${l.protocol}</span><span class="nd-dep-flows">${l.flow_count}</span></div>`;
+      }).join('') : ''}
+  `;
+  document.getElementById('node-detail').classList.add('open');
+}
+
+function clearHighlight() {
+  highlighted = null;
+  if (!g) return;
+  g.selectAll('.node circle').attr('opacity', 1);
+  g.selectAll('.link').attr('opacity', 0.7).attr('stroke-width', d => Math.max(1, Math.min(4, 1 + Math.log(d.flow_count || 1))));
+  g.selectAll('.link-label').attr('opacity', 0.8);
+  g.selectAll('.node text').attr('opacity', 1);
+}
+
+function closeNodeDetail() { document.getElementById('node-detail').classList.remove('open'); }
+
+/* \u2500\u2500 SEARCH HIGHLIGHT \u2500\u2500 */
+function highlightVM(q) {
+  if (!g || !q.trim()) { clearHighlight(); return; }
+  const match = graphData?.nodes.find(n => n.name.toLowerCase().includes(q.toLowerCase()));
+  if (match) {
+    const links = currentFilter === 'all' ? graphData.links : graphData.links.filter(l => l.protocol === currentFilter);
+    selectNode(match, links);
+  }
+}
+
+/* \u2500\u2500 FILTER \u2500\u2500 */
+function setFilter(f) {
+  currentFilter = f;
+  ['all', 'TCP', 'UDP'].forEach(id => {
+    const btn = document.getElementById('btn-' + id.toLowerCase());
+    if (btn) btn.classList.toggle('act', id === f);
+  });
+  initGraph();
+}
+
+/* \u2500\u2500 LAYOUT \u2500\u2500 */
+function setLayout(l) {
+  currentLayout = l;
+  ['force', 'radial'].forEach(id => document.getElementById('btn-' + id).classList.toggle('act', id === l));
+  if (l === 'radial' && simulation) {
+    simulation.force('x', d3.forceX(width / 2).strength(0.1));
+    simulation.force('y', d3.forceY(height / 2).strength(0.1));
+    simulation.force('charge', d3.forceManyBody().strength(-200));
+    simulation.alpha(0.5).restart();
+  } else if (simulation) {
+    simulation.force('x', null);
+    simulation.force('y', null);
+    simulation.force('charge', d3.forceManyBody().strength(-400));
+    simulation.alpha(0.5).restart();
+  }
+}
+
+function resetGraph() {
+  document.getElementById('graph-search').value = '';
+  clearHighlight();
+  closeNodeDetail();
+  currentFilter = 'all';
+  setFilter('all');
+}
+
+// Resize
+window.addEventListener('resize', () => { if (graphData) initGraph(); });
+
+loadGraph();
+function toggleDepNav() {
+  const sb = document.querySelector('.nav-sb');
+  const isCollapsed = sb.classList.contains('collapsed');
+  if (isCollapsed) {
+    sb.style.width = 'var(--sw)';
+    sb.style.overflow = '';
+    sb.classList.remove('collapsed');
+  } else {
+    sb.style.width = '0px';
+    sb.style.overflow = 'hidden';
+    sb.classList.add('collapsed');
+  }
+}
+</script>
+</body>
+</html>

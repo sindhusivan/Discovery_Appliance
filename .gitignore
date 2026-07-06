@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.pyc
+venv/
+.venv/
+
+# Application runtime data (created on the appliance at runtime, not source)
+data/*.db
+data/*.db-wal
+data/*.db-shm
+data/netflow_backup.json
+logs/*.log
+reports/*.xlsx
+
+# Secrets / environment
+.env
+*.pem
+*.key
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/

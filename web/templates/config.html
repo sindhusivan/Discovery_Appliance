@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TAO Discovery Platform | Configuration</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --tao-navy:#0D2461;--tao-blue:#1155CC;--tao-blue-mid:#2B6BE0;--tao-cyan:#0099CC;
+  --bg:#F5F7FB;--bg-card:#FFFFFF;--bg-sidebar:#FFFFFF;--bg-header:#FFFFFF;
+  --bg-input:#F8FAFC;--bg-hover:#F0F4FF;--bg-alt:#F8FAFC;
+  --text:#0D1B3E;--text-2:#4A5568;--text-3:#8896A7;--text-inv:#FFFFFF;
+  --border:#E2E8F0;--border-f:#2B6BE0;--border-s:#CBD5E0;
+  --sh-sm:0 1px 3px rgba(0,0,0,0.06),0 1px 2px rgba(0,0,0,0.04);
+  --sh-md:0 4px 12px rgba(0,0,0,0.08),0 2px 4px rgba(0,0,0,0.04);
+  --sh-lg:0 10px 30px rgba(0,0,0,0.1);--sh-blue:0 4px 16px rgba(43,107,224,0.22);
+  --ok:#059669;--ok-bg:#ECFDF5;--ok-b:#A7F3D0;
+  --warn:#D97706;--warn-bg:#FFFBEB;--warn-b:#FDE68A;
+  --err:#DC2626;--err-bg:#FEF2F2;--err-b:#FECACA;
+  --inf:#2563EB;--inf-bg:#EFF6FF;--inf-b:#BFDBFE;
+  --sw:260px;--hh:64px;--r:10px;--rs:6px;--rl:14px;
+}
+[data-theme="dark"]{
+  --bg:#0A0F1E;--bg-card:#111827;--bg-sidebar:#0D1525;--bg-header:#0D1525;
+  --bg-input:#1A2337;--bg-hover:#1E2D4A;--bg-alt:#141E33;
+  --text:#E8EEFF;--text-2:#94A3B8;--text-3:#64748B;
+  --border:#1E2D4A;--border-s:#2A3B56;
+  --sh-sm:0 1px 3px rgba(0,0,0,0.3);--sh-md:0 4px 12px rgba(0,0,0,0.4);
+  --ok-bg:rgba(5,150,105,0.1);--ok-b:rgba(167,243,208,0.2);
+  --warn-bg:rgba(217,119,6,0.1);--warn-b:rgba(253,230,138,0.2);
+  --err-bg:rgba(220,38,38,0.1);--err-b:rgba(254,202,202,0.2);
+  --inf-bg:rgba(37,99,235,0.1);--inf-b:rgba(191,219,254,0.2);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.6;transition:background .3s,color .3s;}
+.app{display:grid;grid-template-columns:var(--sw) 1fr;grid-template-rows:var(--hh) 1fr;min-height:100vh;}
+
+/* HEADER */
+.hdr{grid-column:1/-1;height:var(--hh);background:var(--bg-header);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 24px;gap:16px;position:sticky;top:0;z-index:100;box-shadow:var(--sh-sm);transition:background .3s,border-color .3s;}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;flex-shrink:0;}
+.logo-mark{width:36px;height:36px;background:linear-gradient(135deg,var(--tao-navy),var(--tao-blue-mid));border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;color:#fff;flex-shrink:0;}
+.logo-name{font-size:15px;font-weight:700;color:var(--tao-navy);letter-spacing:.2px;}
+[data-theme="dark"] .logo-name{color:var(--text);}
+.logo-product{font-size:11px;font-weight:500;color:var(--text-3);letter-spacing:.5px;}
+.hdr-div{width:1px;height:28px;background:var(--border);flex-shrink:0;}
+.hdr-title{font-size:14px;font-weight:600;color:var(--text-2);}
+.hdr-r{margin-left:auto;display:flex;align-items:center;gap:10px;}
+.sys-ok{display:flex;align-items:center;gap:6px;padding:5px 12px;background:var(--ok-bg);border:1px solid var(--ok-b);border-radius:20px;font-size:12px;font-weight:600;color:var(--ok);}
+.sys-dot{width:7px;height:7px;border-radius:50%;background:var(--ok);animation:pd 2s ease-in-out infinite;}
+@keyframes pd{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
+.theme-btn{width:34px;height:34px;border-radius:var(--rs);border:1px solid var(--border);background:var(--bg-card);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:15px;transition:all .2s;color:var(--text-2);}
+.theme-btn:hover{border-color:var(--border-f);background:var(--bg-hover);}
+.clock{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text-3);padding:5px 10px;background:var(--bg-alt);border-radius:var(--rs);border:1px solid var(--border);}
+
+/* SIDEBAR */
+.side{grid-row:2;background:var(--bg-sidebar);border-right:1px solid var(--border);overflow-y:auto;transition:background .3s,border-color .3s;display:flex;flex-direction:column;}
+.sec{padding:20px 0 8px;}
+.sec-lbl{padding:0 16px 6px;font-size:10px;font-weight:700;color:var(--text-3);letter-spacing:1.5px;text-transform:uppercase;}
+.nav-a{display:flex;align-items:center;gap:10px;padding:9px 16px;margin:1px 8px;border-radius:var(--rs);text-decoration:none;font-size:14px;font-weight:500;color:var(--text-2);transition:all .15s;}
+.nav-a:hover{background:var(--bg-hover);color:var(--tao-blue);}
+.nav-a.act{background:linear-gradient(135deg,rgba(17,85,204,.1),rgba(43,107,224,.07));color:var(--tao-blue);font-weight:600;border-left:3px solid var(--tao-blue);padding-left:13px;}
+.nav-ic{width:18px;height:18px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;}
+.nbadge{margin-left:auto;min-width:22px;padding:1px 6px;background:var(--inf-bg);border:1px solid var(--inf-b);border-radius:10px;font-size:11px;font-weight:600;color:var(--inf);font-family:'JetBrains Mono',monospace;text-align:center;}
+.nbadge.live{background:var(--ok-bg);border-color:var(--ok-b);color:var(--ok);}
+
+.side-env{margin:8px 12px 16px;padding:16px;background:linear-gradient(135deg,var(--tao-navy),var(--tao-blue-mid));border-radius:var(--r);color:#fff;}
+.env-title{font-size:10px;font-weight:700;opacity:.65;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px;}
+.env-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;}
+.env-lbl{font-size:12px;opacity:.75;}
+.env-val{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;}
+
+.side-foot{padding:14px 16px;border-top:1px solid var(--border);margin-top:auto;}
+.side-foot-brand{font-size:11px;color:var(--text-3);font-weight:500;}
+.side-foot-ver{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-3);margin-top:2px;}
+
+/* MAIN */
+.main{grid-row:2;overflow-y:auto;padding:28px 32px;}
+.ph{margin-bottom:24px;}
+.bc{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-3);margin-bottom:6px;}
+.bc-sep{color:var(--border-s);}
+.bc-cur{color:var(--text-2);font-weight:500;}
+.pg-title{font-size:22px;font-weight:800;color:var(--text);letter-spacing:-.3px;margin-bottom:4px;}
+.pg-sub{font-size:14px;color:var(--text-3);}
+
+/* STAT ROW */
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:20px;}
+.sc{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--rl);padding:18px 20px;box-shadow:var(--sh-sm);display:flex;align-items:flex-start;gap:14px;transition:all .2s;}
+.sc:hover{box-shadow:var(--sh-md);transform:translateY(-1px);}
+.sc-ic{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.bl{background:var(--inf-bg)}.gr{background:var(--ok-bg)}.pu{background:rgba(124,58,237,.08);}
+.sc-lbl{font-size:11px;font-weight:600;color:var(--text-3);letter-spacing:.8px;text-transform:uppercase;margin-bottom:4px;}
+.sc-val{font-size:26px;font-weight:800;color:var(--text);font-family:'JetBrains Mono',monospace;line-height:1;}
+.sc-sub{font-size:12px;color:var(--text-3);margin-top:4px;}
+
+/* CARD */
+.card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--rl);box-shadow:var(--sh-sm);overflow:hidden;transition:background .3s,border-color .3s;margin-bottom:20px;}
+.card:hover{box-shadow:var(--sh-md);}
+.ch{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;}
+.ch-ic{width:32px;height:32px;border-radius:var(--rs);background:var(--inf-bg);border:1px solid var(--inf-b);display:flex;align-items:center;justify-content:center;font-size:15px;}
+.ct{font-size:14px;font-weight:700;color:var(--text);}
+.cs{font-size:12px;color:var(--text-3);margin-top:1px;}
+.cb{padding:20px;}
+
+/* FORM */
+.fg{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.fgr{display:flex;flex-direction:column;gap:6px;}
+.full{grid-column:1/-1;}
+.flbl{font-size:13px;font-weight:600;color:var(--text-2);display:flex;align-items:center;gap:6px;}
+.req{color:var(--err);font-size:11px;}
+.fi{background:var(--bg-input);border:1.5px solid var(--border);border-radius:var(--rs);padding:10px 14px;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;color:var(--text);transition:all .2s;outline:none;width:100%;}
+.fi::placeholder{color:var(--text-3);}
+.fi:focus{border-color:var(--border-f);box-shadow:0 0 0 3px rgba(43,107,224,.12);background:var(--bg-card);}
+.fhint{font-size:12px;color:var(--text-3);}
+
+/* TOGGLE ROW */
+.tog{display:flex;align-items:center;gap:14px;padding:14px 16px;border:1.5px solid var(--border);border-radius:var(--rs);background:var(--bg-input);cursor:pointer;transition:all .2s;width:100%;}
+.tog:hover{border-color:var(--border-f);}
+.tog-info{flex:1;text-align:left;}
+.tog-t{font-size:14px;font-weight:600;color:var(--text);}
+.tog-d{font-size:12px;color:var(--text-3);margin-top:2px;}
+.sw{position:relative;width:44px;height:24px;flex-shrink:0;}
+.sw input{opacity:0;width:0;height:0;position:absolute;}
+.sw-track{position:absolute;inset:0;background:var(--border-s);border-radius:12px;transition:background .3s;cursor:pointer;}
+.sw-thumb{position:absolute;top:3px;left:3px;width:18px;height:18px;background:#fff;border-radius:50%;transition:transform .3s;box-shadow:0 1px 3px rgba(0,0,0,.2);pointer-events:none;}
+.sw input:checked~.sw-track{background:var(--tao-blue);}
+.sw input:checked~.sw-thumb{transform:translateX(20px);}
+
+/* BUTTONS */
+.brow{display:flex;gap:10px;justify-content:flex-end;margin-top:20px;padding-top:16px;border-top:1px solid var(--border);}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border-radius:var(--rs);font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;border:none;transition:all .2s;text-decoration:none;white-space:nowrap;}
+.btn-sec{background:var(--bg-card);border:1.5px solid var(--border);color:var(--text-2);}
+.btn-sec:hover{border-color:var(--border-f);color:var(--tao-blue);background:var(--bg-hover);}
+.btn-pri{background:linear-gradient(135deg,var(--tao-blue),var(--tao-blue-mid));color:#fff;box-shadow:var(--sh-blue);}
+.btn-pri:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(43,107,224,.35);}
+.btn-pri:disabled{opacity:.5;cursor:not-allowed;transform:none;}
+.btn-ok{background:linear-gradient(135deg,#059669,#10B981);color:#fff;box-shadow:0 4px 12px rgba(5,150,105,.25);}
+.btn-ok:hover{transform:translateY(-1px);}
+.btn-lg{padding:12px 28px;font-size:15px;}
+
+/* PRE-FLIGHT */
+.pf{display:none;animation:si .4s ease;}
+@keyframes si{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.tw{overflow-x:auto;margin-top:12px;border:1px solid var(--border);border-radius:var(--r);}
+table{width:100%;border-collapse:collapse;}
+thead th{padding:10px 16px;background:var(--bg-alt);font-size:11px;font-weight:700;color:var(--text-3);letter-spacing:1px;text-transform:uppercase;border-bottom:1px solid var(--border);text-align:left;}
+tbody td{padding:13px 16px;border-bottom:1px solid var(--border);font-size:13px;color:var(--text-2);}
+tbody tr:last-child td{border-bottom:none;}
+tbody tr:hover td{background:var(--bg-hover);}
+
+.badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600;}
+.b-ok{background:var(--ok-bg);border:1px solid var(--ok-b);color:var(--ok);}
+.b-warn{background:var(--warn-bg);border:1px solid var(--warn-b);color:var(--warn);}
+.b-inf{background:var(--inf-bg);border:1px solid var(--inf-b);color:var(--inf);}
+.b-navy{background:rgba(13,36,97,.08);border:1px solid rgba(13,36,97,.15);color:var(--tao-navy);}
+[data-theme="dark"] .b-navy{background:rgba(43,107,224,.1);border-color:rgba(43,107,224,.2);color:#6699ff;}
+
+.alert{padding:14px 16px;border-radius:var(--rs);display:flex;gap:12px;margin-bottom:16px;border:1px solid;}
+.al-inf{background:var(--inf-bg);border-color:var(--inf-b);}
+.al-ic{font-size:16px;flex-shrink:0;margin-top:1px;}
+.al-t{font-size:13px;font-weight:700;color:var(--text);margin-bottom:3px;}
+.al-txt{font-size:13px;color:var(--text-2);line-height:1.5;}
+
+.flash{padding:12px 16px;border-radius:var(--rs);font-size:13px;font-weight:500;display:none;margin-top:12px;border:1px solid;}
+.flash.err{background:var(--err-bg);border-color:var(--err-b);color:var(--err);display:block;}
+.flash.ok{background:var(--ok-bg);border-color:var(--ok-b);color:var(--ok);display:block;}
+
+.sp{width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+@media(max-width:768px){
+  .app{grid-template-columns:1fr;}
+  .side{display:none;}
+  .stats{grid-template-columns:1fr;}
+  .fg{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- HEADER -->
+<header class="hdr">
+  <a class="logo" href="/"><div class="logo-mark">T</div><div><div class="logo-name">TAO Digital Solutions</div><div class="logo-product">Discovery Platform</div></div></a>
+  <div class="hdr-div"></div>
+  <span class="hdr-title">Infrastructure Intelligence</span>
+  <div class="hdr-r">
+    <div class="sys-ok"><div class="sys-dot"></div>System Online</div>
+    <div class="clock" id="clock">\u2014</div>
+    <button class="theme-btn" onclick="toggleTheme()" title="Toggle theme"><span id="ti">\ud83c\udf19</span></button>
+  </div>
+</header>
+
+<!-- SIDEBAR -->
+<aside class="side">
+  <div class="sec">
+    <div class="sec-lbl">Navigation</div>
+    <a href="/" class="nav-a act"><span class="nav-ic">\u2699\ufe0f</span>Configuration</a>
+    <a href="/status" class="nav-a"><span class="nav-ic">\ud83d\udce1</span>Status Monitor</a>
+    <a href="/export" class="nav-a"><span class="nav-ic">\ud83d\udcca</span>Report Center</a>
+  </div>
+  <div class="sec">
+    <div class="sec-lbl">Live Metrics</div>
+    <div class="nav-a" style="cursor:default"><span class="nav-ic">\ud83d\udcbb</span>Virtual Machines<span class="nbadge" id="vm-b">\u2014</span></div>
+    <div class="nav-a" style="cursor:default"><span class="nav-ic">\ud83d\udda5\ufe0f</span>ESXi Hosts<span class="nbadge" id="ht-b">\u2014</span></div>
+    <div class="nav-a" style="cursor:default"><span class="nav-ic">\ud83d\udd17</span>Dependencies<span class="nbadge" id="dp-b">\u2014</span></div>
+    <div class="nav-a" style="cursor:default"><span class="nav-ic">\ud83d\udcf6</span>Flow Listener<span class="nbadge live">\u25cf LIVE</span></div>
+  </div>
+  <div class="side-env">
+    <div class="env-title">Environment Summary</div>
+    <div class="env-row"><span class="env-lbl">VMs Discovered</span><span class="env-val" id="e-vms">\u2014</span></div>
+    <div class="env-row"><span class="env-lbl">ESXi Hosts</span><span class="env-val" id="e-hts">\u2014</span></div>
+    <div class="env-row"><span class="env-lbl">Datastores</span><span class="env-val" id="e-ds">\u2014</span></div>
+    <div class="env-row"><span class="env-lbl">Mapped Flows</span><span class="env-val" id="e-dp">\u2014</span></div>
+  </div>
+  <div class="side-foot">
+    <div class="side-foot-brand">TAO Digital Solutions</div>
+    <div class="side-foot-ver">Discovery Platform v1.0 \u00b7 taodigitalsolutions.com</div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+  <div class="ph">
+    <div class="bc"><span>Platform</span><span class="bc-sep">\u203a</span><span class="bc-cur">Configuration</span></div>
+    <h1 class="pg-title">Discovery Configuration</h1>
+    <p class="pg-sub">Connect to a vCenter Server to initiate infrastructure discovery and dependency mapping</p>
+  </div>
+
+  <!-- STAT CARDS -->
+  <div class="stats">
+    <div class="sc"><div class="sc-ic bl">\ud83d\udcbb</div><div><div class="sc-lbl">VMs Discovered</div><div class="sc-val" id="m-vms">\u2014</div><div class="sc-sub">Total virtual machines</div></div></div>
+    <div class="sc"><div class="sc-ic gr">\ud83d\udd17</div><div><div class="sc-lbl">Dependencies Mapped</div><div class="sc-val" id="m-deps">\u2014</div><div class="sc-sub">VM-to-VM connections</div></div></div>
+    <div class="sc"><div class="sc-ic pu">\ud83d\udce1</div><div><div class="sc-lbl">IPFIX Listener</div><div class="sc-val" style="font-size:16px;color:var(--ok)">\u25cf Active</div><div class="sc-sub">Continuous flow capture</div></div></div>
+  </div>
+
+  <!-- CONFIG CARD -->
+  <div class="card">
+    <div class="ch"><div class="ch-ic">\ud83d\udd0c</div><div><div class="ct">vCenter Connection Settings</div><div class="cs">Enter read-only service account credentials</div></div></div>
+    <div class="cb">
+      <div class="fg">
+        <div class="fgr full">
+          <label class="flbl">vCenter Server (IP or FQDN) <span class="req">required</span></label>
+          <input class="fi" type="text" id="vcenter_ip" placeholder="m1-vcs.taodigital.lab or 172.16.x.x">
+          <span class="fhint">The FQDN or IP address of the vCenter Server appliance</span>
+        </div>
+        <div class="fgr">
+          <label class="flbl">Service Account Username <span class="req">required</span></label>
+          <input class="fi" type="text" id="username" placeholder="user@vsphere.local">
+        </div>
+        <div class="fgr">
+          <label class="flbl">Password <span class="req">required</span></label>
+          <input class="fi" type="password" id="password" placeholder="\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022">
+        </div>
+        <div class="fgr full">
+          <button class="tog" onclick="document.getElementById('ssl_chk').click()">
+            <div class="tog-info">
+              <div class="tog-t">Bypass SSL Verification</div>
+              <div class="tog-d">Enable for self-signed certificates \u2014 common in lab environments</div>
+            </div>
+            <div class="sw">
+              <input type="checkbox" id="ssl_chk">
+              <div class="sw-track"></div>
+              <div class="sw-thumb"></div>
+            </div>
+          </button>
+        </div>
+      </div>
+      <div id="fmsg" class="flash"></div>
+      <div class="brow">
+        <button class="btn btn-sec" onclick="clearForm()">Clear Form</button>
+        <button class="btn btn-pri btn-lg" onclick="runPreflight()" id="pf-btn">Run Pre-Flight Check \u2192</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PRE-FLIGHT -->
+  <div class="pf" id="pf-sec">
+    <div class="card">
+      <div class="ch"><div class="ch-ic">\ud83d\udee1\ufe0f</div><div><div class="ct">Pre-Flight Validation</div><div class="cs">Review distributed switch configuration before proceeding</div></div></div>
+      <div class="cb">
+        <div class="alert al-inf">
+          <div class="al-ic">\u2139\ufe0f</div>
+          <div><div class="al-t">Safety Protocol Active</div>
+          <div class="al-txt">Only switches explicitly added to the <strong>ALLOWED_VDS</strong> safelist in <code>engine/netflow_manager.py</code> will ever be modified. Switches marked \u201cProtected\u201d below are read-only to this tool. NetFlow configuration persists after discovery \u2014 no automatic rollback occurs unless a rollback is triggered.</div></div>
+        </div>
+        <div class="tw">
+          <table>
+            <thead><tr><th>Switch Name</th><th>NetFlow Status</th><th>Current Collector</th><th>Action</th></tr></thead>
+            <tbody id="pf-body"><tr><td colspan="4" style="text-align:center;padding:24px;color:var(--text-3)">Loading...</td></tr></tbody>
+          </table>
+        </div>
+        <div class="brow">
+          <button class="btn btn-sec" onclick="document.getElementById('pf-sec').style.display='none'">Cancel</button>
+          <button class="btn btn-ok btn-lg" onclick="startDisc()" id="launch-btn">\u25b6 Initiate Discovery</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+</div>
+
+<script>
+const t=localStorage.getItem('tao-theme')||'light';
+document.documentElement.setAttribute('data-theme',t);
+document.getElementById('ti').textContent=t==='dark'?'\u2600\ufe0f':'\ud83c\udf19';
+function toggleTheme(){const c=document.documentElement.getAttribute('data-theme'),n=c==='dark'?'light':'dark';document.documentElement.setAttribute('data-theme',n);localStorage.setItem('tao-theme',n);document.getElementById('ti').textContent=n==='dark'?'\u2600\ufe0f':'\ud83c\udf19';}
+function updateClock(){document.getElementById('clock').textContent=new Date().toUTCString().slice(0,-4).replace('GMT','UTC');}
+setInterval(updateClock,1000);updateClock();
+async function fetchCounts(){try{const r=await fetch('/api/db_counts'),d=await r.json();const v=d.vms??'\u2014',dp=d.deps??'\u2014',h=d.hosts??'\u2014',ds=d.datastores??'\u2014';['vm-b','m-vms','e-vms'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=v;});['dp-b','m-deps','e-dp'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=dp;});['ht-b','e-hts'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=h;});const ed=document.getElementById('e-ds');if(ed)ed.textContent=ds;}catch(e){}}
+fetchCounts();setInterval(fetchCounts,20000);
+function clearForm(){['vcenter_ip','username','password'].forEach(i=>document.getElementById(i).value='');document.getElementById('ssl_chk').checked=false;document.getElementById('pf-sec').style.display='none';showF('','');}
+function showF(m,t){const e=document.getElementById('fmsg');e.className='flash '+(t||'');e.textContent=m;}
+async function runPreflight(){
+  const host=document.getElementById('vcenter_ip').value.trim(),user=document.getElementById('username').value.trim(),pass=document.getElementById('password').value,ssl=document.getElementById('ssl_chk').checked;
+  if(!host||!user||!pass){showF('Please complete all required fields before running the pre-flight check.','err');return;}
+  const btn=document.getElementById('pf-btn');btn.innerHTML='<div class="sp"></div>Scanning vCenter...';btn.disabled=true;showF('','');
+  try{const r=await fetch('/api/preflight',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({vcenter_ip:host,username:user,password:pass,disable_ssl:ssl})});const d=await r.json();
+    if(d.status==='success'){document.getElementById('pf-body').innerHTML=d.report.map(r=>`<tr><td><strong>${r.vds_name}</strong></td><td>${r.is_in_use?'<span class="badge b-ok">\u25cf Active</span>':'<span class="badge b-warn">\u25cb Inactive</span>'}</td><td><code style="font-family:JetBrains Mono,monospace;font-size:12px;color:var(--text-3)">${r.current_collector_ip||'\u2014'}</code></td><td>${r.will_be_modified?'<span class="badge b-inf">\u2713 Will configure</span>':'<span class="badge b-navy">\ud83d\udd12 Protected</span>'}</td></tr>`).join('');const ps=document.getElementById('pf-sec');ps.style.display='block';ps.scrollIntoView({behavior:'smooth'});}
+    else showF('Pre-flight failed: '+d.error,'err');
+  }catch(e){showF('Connection error: '+e.message,'err');}
+  finally{btn.innerHTML='Run Pre-Flight Check \u2192';btn.disabled=false;}
+}
+async function startDisc(){
+  const host=document.getElementById('vcenter_ip').value.trim(),user=document.getElementById('username').value.trim(),pass=document.getElementById('password').value,ssl=document.getElementById('ssl_chk').checked;
+  const btn=document.getElementById('launch-btn');btn.innerHTML='<div class="sp"></div>Initiating...';btn.disabled=true;
+  try{const r=await fetch('/api/start_discovery',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({vcenter_ip:host,username:user,password:pass,disable_ssl:ssl,approved:true})});const d=await r.json();
+    if(d.message)window.location.href='/status';else{showF(d.error||'Failed','err');btn.innerHTML='\u25b6 Initiate Discovery';btn.disabled=false;}
+  }catch(e){showF(e.message,'err');btn.innerHTML='\u25b6 Initiate Discovery';btn.disabled=false;}
+}
+</script>
+</body>
+</html>
