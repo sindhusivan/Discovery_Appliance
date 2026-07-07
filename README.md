@@ -4,6 +4,8 @@ Agentless VMware vSphere discovery and application-dependency mapping appliance,
 
 **Long-term goal:** this is the foundation for a broader wave-planning tool for VM migration projects — see [Roadmap](#roadmap) below.
 
+![TAO Discovery Platform Architecture](docs/architecture-diagram.svg)
+
 ## Current status
 
 A working instance is deployed and verified end-to-end in the lab (`m1-vc.taodigital.lab`):
