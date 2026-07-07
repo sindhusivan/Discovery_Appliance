@@ -6,18 +6,33 @@ Agentless VMware vSphere discovery and application-dependency mapping appliance,
 
 ![TAO Discovery Platform Architecture](docs/architecture-diagram.svg)
 
-## Current status
+## Progress tracker
 
-A working instance is deployed and verified end-to-end in the lab (`m1-vc.taodigital.lab`):
+Legend: ✅ Done &nbsp;·&nbsp; 🟡 In progress &nbsp;·&nbsp; ⬜ Not started &nbsp;·&nbsp; 🔒 Security follow-up
 
-| Component | State |
-|---|---|
-| VM `TAO-Discovery-Appliance` | Running, Photon OS 5.0, resource pool `TAOAssess360` |
-| Web UI (Flask, port 8443) | Deployed, `systemd` service enabled, verified reachable |
-| IPFIX listener (UDP 4739) | Deployed, running, **not yet fed real traffic** |
-| SQLite schema | Initialized, empty (no discovery run yet) |
-| NetFlow/vDS configuration | **Not configured** — `ALLOWED_VDS` safelist is intentionally empty |
-| Actual discovery scan against vCenter | **Not yet run** |
+**Deployed & verified** — lab instance at `m1-vc.taodigital.lab`, resource pool `TAOAssess360`
+
+| | Item | Detail |
+|:---:|---|---|
+| ✅ | Repo reorganized | `web/` `engine/` `collector/` layout, broken imports fixed, missing modules added |
+| ✅ | Appliance VM | `TAO-Discovery-Appliance`, Photon OS 5.0, powered on |
+| ✅ | Web UI | Flask on port 8443, `systemd`-managed, reachable and verified |
+| ✅ | SQLite schema | Initialized via `db_init.py` (currently empty — no scan run yet) |
+| ✅ | IPFIX listener | Running on UDP 4739, idle (no flows fed yet) |
+| ✅ | Icon/encoding bug | Fixed literal `\uXXXX` text rendering in 4 templates |
+
+**Next up**
+
+| | Item | Priority |
+|:---:|---|---|
+| ⬜ | Add an isolated test vDS to `ALLOWED_VDS` and validate NetFlow config | High |
+| ⬜ | Run the first live discovery scan against the lab vCenter | High |
+| ⬜ | Generate VM-to-VM traffic and confirm IPFIX flows land in `dependencies` | High |
+| 🔒 | Move off root/password SSH → key-based auth or dedicated service account | Medium |
+| 🔒 | Scope the vCenter service account down to read-only least-privilege | Medium |
+| ⬜ | Wave-planning feature (grouping VMs into migration waves) — **net-new, no code yet** | Future |
+| ⬜ | UI/UX polish pass extending the existing design system to new pages | Future |
+| ⬜ | Turn the deployment guide into a repeatable installer (cloud-init/kickstart) | Future |
 
 Nothing beyond the one appliance VM has been touched in the lab vCenter — no vDS/NetFlow changes, no other VMs or resource pools affected.
 
@@ -55,28 +70,37 @@ Full field-by-field deployment steps (Photon OS install, systemd units, port ref
 
 ## Roadmap
 
-**Phase 1 — Appliance foundation (done)**
+| Status | Phase |
+|:---:|---|
+| ✅ | **Phase 1 — Appliance foundation** |
+| 🟡 | **Phase 2 — Validate discovery + dependency mapping** |
+| ⬜ | **Phase 3 — Security hardening** |
+| ⬜ | **Phase 4 — Wave planning** *(the actual product goal)* |
+| ⬜ | **Phase 5 — UI/UX polish pass** |
+| ⬜ | **Phase 6 — Packaging for repeat engagements** |
+
+**✅ Phase 1 — Appliance foundation**
 Base appliance deployed and reachable; inventory collector, report generator, and UI shell all in place and bug-fixed.
 
-**Phase 2 — Validate discovery + dependency mapping (next)**
+**🟡 Phase 2 — Validate discovery + dependency mapping** *(in progress)*
 - Add a dedicated/isolated vDS to `ALLOWED_VDS` in `engine/netflow_manager.py`
 - Run a live discovery scan against the lab vCenter, confirm inventory populates correctly
 - Generate VM-to-VM traffic and confirm the IPFIX listener actually captures and attributes flows
 
-**Phase 3 — Security hardening**
+**⬜ Phase 3 — Security hardening**
 - Move off root/password SSH to key-based auth (or a dedicated non-root service account)
 - Read-only vCenter service account with the minimal privilege set (documented in the deployment guide's appendix)
 - Review whether the web UI needs auth in front of it before it's used against real client environments
 
-**Phase 4 — Wave planning (the actual product goal)**
+**⬜ Phase 4 — Wave planning** *(the actual product goal)*
 - Group discovered VMs into migration waves using the dependency graph as a constraint (don't split tightly-coupled VMs across waves)
 - Wave sequencing UI, capacity/readiness indicators per wave
 - This is net-new work on top of the current inventory/dependency foundation — no code exists for this yet
 
-**Phase 5 — UI/UX polish pass**
+**⬜ Phase 5 — UI/UX polish pass**
 The existing dashboard/config/status pages already have a consistent premium design system (see the CSS custom properties at the top of each template) — extend that system to the wave-planning UI rather than introducing a new visual language.
 
-**Phase 6 — Packaging for repeat engagements**
+**⬜ Phase 6 — Packaging for repeat engagements**
 Turn the deployment guide into something closer to a one-command installer (cloud-init / kickstart) so deploying at a new client doesn't require the manual phase-by-phase process every time.
 
 ## Reference
