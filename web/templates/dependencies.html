@@ -130,10 +130,10 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
   <button onclick="toggleDepNav()" style="width:30px;height:30px;border-radius:5px;border:1px solid var(--bd);background:var(--bg-c);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0" title="Toggle sidebar">☰</button><span class="hdr-title">Application Dependency Graph</span>
   <div class="hdr-r">
     <div class="sys-ok"><div class="sdot"></div>Online</div>
-    <div class="clock" id="clock">\u2014</div>
-    <a href="/dashboard" class="ibtn" title="Environment Tree">\ud83c\udfe2</a>
-    <a href="/export" class="ibtn" title="Export Reports">\ud83d\udce5</a>
-    <button class="ibtn" onclick="toggleTheme()"><span id="ti">\ud83c\udf19</span></button>
+    <div class="clock" id="clock">—</div>
+    <a href="/dashboard" class="ibtn" title="Environment Tree">🏢</a>
+    <a href="/export" class="ibtn" title="Export Reports">📥</a>
+    <button class="ibtn" onclick="toggleTheme()"><span id="ti">🌙</span></button>
   </div>
 </header>
 
@@ -141,24 +141,24 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
 <aside class="nav-sb">
   <div class="nav-sec">
     <div class="nav-lbl">Platform</div>
-    <a href="/config" class="nav-a"><span class="nav-ic">\u2699\ufe0f</span>Configuration</a>
-    <a href="/dashboard" class="nav-a"><span class="nav-ic">\ud83c\udfe2</span>Environment</a>
-    <a href="/dependencies" class="nav-a act"><span class="nav-ic">\ud83d\udd17</span>Dependencies</a>
-    <a href="/export" class="nav-a"><span class="nav-ic">\ud83d\udce5</span>Export Reports</a>
+    <a href="/config" class="nav-a"><span class="nav-ic">⚙️</span>Configuration</a>
+    <a href="/dashboard" class="nav-a"><span class="nav-ic">🏢</span>Environment</a>
+    <a href="/dependencies" class="nav-a act"><span class="nav-ic">🔗</span>Dependencies</a>
+    <a href="/export" class="nav-a"><span class="nav-ic">📥</span>Export Reports</a>
   </div>
   <div class="nav-sec">
     <div class="nav-lbl">Graph Controls</div>
-    <div class="nav-a" style="cursor:default"><span class="nav-ic">\ud83d\udd35</span>Powered On VMs</div>
-    <div class="nav-a" style="cursor:default"><span class="nav-ic">\u26ab</span>Powered Off VMs</div>
-    <div class="nav-a" style="cursor:default"><span class="nav-ic">\u2192</span>TCP Flow</div>
-    <div class="nav-a" style="cursor:default"><span class="nav-ic">\u21e2</span>UDP Flow</div>
+    <div class="nav-a" style="cursor:default"><span class="nav-ic">🔵</span>Powered On VMs</div>
+    <div class="nav-a" style="cursor:default"><span class="nav-ic">⚫</span>Powered Off VMs</div>
+    <div class="nav-a" style="cursor:default"><span class="nav-ic">→</span>TCP Flow</div>
+    <div class="nav-a" style="cursor:default"><span class="nav-ic">⇢</span>UDP Flow</div>
   </div>
   <div class="env-card">
     <div class="ec-t">Graph Statistics</div>
-    <div class="ec-row"><span class="ec-l">VM Nodes</span><span class="ec-v" id="node-count">\u2014</span></div>
-    <div class="ec-row"><span class="ec-l">Connections</span><span class="ec-v" id="link-count">\u2014</span></div>
-    <div class="ec-row"><span class="ec-l">Total Flows</span><span class="ec-v" id="flow-count">\u2014</span></div>
-    <div class="ec-row"><span class="ec-l">Unique Ports</span><span class="ec-v" id="port-count">\u2014</span></div>
+    <div class="ec-row"><span class="ec-l">VM Nodes</span><span class="ec-v" id="node-count">—</span></div>
+    <div class="ec-row"><span class="ec-l">Connections</span><span class="ec-v" id="link-count">—</span></div>
+    <div class="ec-row"><span class="ec-l">Total Flows</span><span class="ec-v" id="flow-count">—</span></div>
+    <div class="ec-row"><span class="ec-l">Unique Ports</span><span class="ec-v" id="port-count">—</span></div>
   </div>
   <div class="nav-ft">
     <div class="ft-b">TAO Digital Solutions</div>
@@ -182,19 +182,19 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
       <button class="ctrl-btn" id="btn-tcp" onclick="setFilter('TCP')">TCP</button>
       <button class="ctrl-btn" id="btn-udp" onclick="setFilter('UDP')">UDP</button>
       <div class="ctrl-sep"></div>
-      <button class="ctrl-btn" onclick="resetGraph()">\u21ba Reset</button>
+      <button class="ctrl-btn" onclick="resetGraph()">↺ Reset</button>
     </div>
     <div class="search-ctrl">
-      <span style="color:var(--tx3)">\ud83d\udd0d</span>
+      <span style="color:var(--tx3)">🔍</span>
       <input type="text" id="graph-search" placeholder="Highlight VM..." oninput="highlightVM(this.value)">
     </div>
   </div>
 
   <!-- STATS BAR -->
   <div class="stats-bar">
-    <div class="stat-pill"><div class="sp-val" id="s-nodes">\u2014</div><div class="sp-lbl">VMs</div></div>
-    <div class="stat-pill"><div class="sp-val" id="s-edges">\u2014</div><div class="sp-lbl">Connections</div></div>
-    <div class="stat-pill"><div class="sp-val" id="s-flows">\u2014</div><div class="sp-lbl">Total Flows</div></div>
+    <div class="stat-pill"><div class="sp-val" id="s-nodes">—</div><div class="sp-lbl">VMs</div></div>
+    <div class="stat-pill"><div class="sp-val" id="s-edges">—</div><div class="sp-lbl">Connections</div></div>
+    <div class="stat-pill"><div class="sp-val" id="s-flows">—</div><div class="sp-lbl">Total Flows</div></div>
   </div>
 
   <!-- LEGEND -->
@@ -204,14 +204,14 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
     <div class="leg-row"><div class="leg-dot" style="background:#94A3B8"></div>Powered Off VM</div>
     <div class="leg-row"><div class="leg-dot" style="background:#10B981"></div>High Flow Volume</div>
     <div class="leg-row">
-      <div class="leg-line" style="background:#2B6BE0"><span class="leg-arrow" style="color:#2B6BE0">\u25b6</span></div>
+      <div class="leg-line" style="background:#2B6BE0"><span class="leg-arrow" style="color:#2B6BE0">▶</span></div>
       TCP Connection
     </div>
     <div class="leg-row">
-      <div class="leg-line" style="background:#D97706;background:repeating-linear-gradient(90deg,#D97706,#D97706 4px,transparent 4px,transparent 8px)"><span class="leg-arrow" style="color:#D97706">\u25b6</span></div>
+      <div class="leg-line" style="background:#D97706;background:repeating-linear-gradient(90deg,#D97706,#D97706 4px,transparent 4px,transparent 8px)"><span class="leg-arrow" style="color:#D97706">▶</span></div>
       UDP Connection
     </div>
-    <div style="font-size:10px;color:var(--tx3);margin-top:8px;border-top:1px solid var(--bd);padding-top:6px">Scroll to zoom \u00b7 Drag to pan<br>Click node for details</div>
+    <div style="font-size:10px;color:var(--tx3);margin-top:8px;border-top:1px solid var(--bd);padding-top:6px">Scroll to zoom · Drag to pan<br>Click node for details</div>
   </div>
 
   <!-- GRAPH SVG -->
@@ -222,10 +222,10 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
 
   <!-- EMPTY STATE (hidden when graph loads) -->
   <div class="graph-empty" id="graph-empty" style="display:none">
-    <div class="ge-ic">\ud83d\udd17</div>
+    <div class="ge-ic">🔗</div>
     <div class="ge-t">No dependency data yet</div>
     <div class="ge-s">Generate VM-to-VM traffic and ensure NetFlow is enabled on your vDS portgroups</div>
-    <a href="/dashboard" class="btn btn-pri">\u2190 Back to Dashboard</a>
+    <a href="/dashboard" class="btn btn-pri">← Back to Dashboard</a>
   </div>
 </div>
 
@@ -233,7 +233,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
 <div class="node-detail" id="node-detail">
   <div class="nd-hdr">
     <div class="nd-title">VM Details</div>
-    <button class="nd-close" onclick="closeNodeDetail()">\u00d7</button>
+    <button class="nd-close" onclick="closeNodeDetail()">×</button>
   </div>
   <div class="nd-scroll" id="nd-scroll"></div>
 </div>
@@ -241,22 +241,22 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
 </div><!-- app -->
 
 <script>
-/* \u2500\u2500 THEME \u2500\u2500 */
+/* ── THEME ── */
 const th = localStorage.getItem('tao-theme') || 'light';
 document.documentElement.setAttribute('data-theme', th);
-document.getElementById('ti').textContent = th === 'dark' ? '\u2600\ufe0f' : '\ud83c\udf19';
+document.getElementById('ti').textContent = th === 'dark' ? '☀️' : '🌙';
 function toggleTheme() {
   const c = document.documentElement.getAttribute('data-theme');
   const n = c === 'dark' ? 'light' : 'dark';
   document.documentElement.setAttribute('data-theme', n);
   localStorage.setItem('tao-theme', n);
-  document.getElementById('ti').textContent = n === 'dark' ? '\u2600\ufe0f' : '\ud83c\udf19';
+  document.getElementById('ti').textContent = n === 'dark' ? '☀️' : '🌙';
   initGraph();
 }
 function tick() { document.getElementById('clock').textContent = new Date().toUTCString().slice(0, -4).replace('GMT', 'UTC'); }
 setInterval(tick, 1000); tick();
 
-/* \u2500\u2500 COUNTS \u2500\u2500 */
+/* ── COUNTS ── */
 async function fetchCounts() {
   try {
     const d = await (await fetch('/api/db_counts')).json();
@@ -264,7 +264,7 @@ async function fetchCounts() {
 }
 fetchCounts();
 
-/* \u2500\u2500 GRAPH STATE \u2500\u2500 */
+/* ── GRAPH STATE ── */
 let graphData = null;
 let simulation = null;
 let currentFilter = 'all';
@@ -272,7 +272,7 @@ let currentLayout = 'force';
 let highlighted = null;
 let svg, g, width, height;
 
-/* \u2500\u2500 COLOUR HELPERS \u2500\u2500 */
+/* ── COLOUR HELPERS ── */
 function isDark() { return document.documentElement.getAttribute('data-theme') === 'dark'; }
 function nodeColor(d) {
   if (d.power_state === 'poweredOn') return '#2B6BE0';
@@ -283,7 +283,7 @@ function linkColor(d) { return portColor(d.port); }
 function textColor() { return isDark() ? '#E8EEFF' : '#0D1B3E'; }
 function bgColor() { return isDark() ? '#0A0F1E' : '#F5F7FB'; }
 
-/* \u2500\u2500 LOAD DATA \u2500\u2500 */
+/* ── LOAD DATA ── */
 async function loadGraph() {
   try {
     const d = await (await fetch('/api/graph')).json();
@@ -321,7 +321,7 @@ function updateStats(d) {
   document.getElementById('s-flows').textContent = totalFlows;
 }
 
-/* \u2500\u2500 GRAPH INIT \u2500\u2500 */
+/* ── GRAPH INIT ── */
 function initGraph() {
   if (!graphData) return;
   document.getElementById('graph-svg').innerHTML = '';
@@ -460,7 +460,7 @@ function initGraph() {
     .attr('text-anchor', 'middle')
     .attr('dominant-baseline', 'central')
     .attr('font-size', 12)
-    .text(d => d.power_state === 'poweredOn' ? '\ud83d\udcbb' : '\ud83d\udda5\ufe0f');
+    .text(d => d.power_state === 'poweredOn' ? '💻' : '🖥️');
 
   // Node labels
   node.append('text')
@@ -470,7 +470,7 @@ function initGraph() {
     .attr('font-weight', '600')
     .attr('fill', textColor)
     .attr('font-family', 'Plus Jakarta Sans, sans-serif')
-    .text(d => d.name.length > 16 ? d.name.slice(0, 14) + '\u2026' : d.name);
+    .text(d => d.name.length > 16 ? d.name.slice(0, 14) + '…' : d.name);
 
   // IP sub-label
   node.append('text')
@@ -506,22 +506,22 @@ function initGraph() {
   svg.on('click', () => { clearHighlight(); closeNodeDetail(); });
 }
 
-/* \u2500\u2500 DRAG \u2500\u2500 */
+/* ── DRAG ── */
 function dragStart(event, d) { if (!event.active) simulation.alphaTarget(0.3).restart(); d.fx = d.x; d.fy = d.y; }
 function dragged(event, d) { d.fx = event.x; d.fy = event.y; }
 function dragEnd(event, d) { if (!event.active) simulation.alphaTarget(0); d.fx = null; d.fy = null; }
 
-/* \u2500\u2500 TOOLTIP \u2500\u2500 */
+/* ── TOOLTIP ── */
 function showTooltip(event, d) {
   const tt = document.getElementById('tooltip');
-  tt.innerHTML = `<strong>${d.name}</strong><br><span style="color:var(--tx3);font-family:JetBrains Mono,monospace;font-size:11px">${d.ip || '\u2014'}</span><br><span style="color:${d.power_state === 'poweredOn' ? 'var(--ok)' : 'var(--off)'}">\u25cf ${d.power_state}</span>`;
+  tt.innerHTML = `<strong>${d.name}</strong><br><span style="color:var(--tx3);font-family:JetBrains Mono,monospace;font-size:11px">${d.ip || '—'}</span><br><span style="color:${d.power_state === 'poweredOn' ? 'var(--ok)' : 'var(--off)'}">● ${d.power_state}</span>`;
   tt.style.left = (event.pageX + 12) + 'px';
   tt.style.top = (event.pageY - 10) + 'px';
   tt.classList.add('show');
 }
 function hideTooltip() { document.getElementById('tooltip').classList.remove('show'); }
 
-/* \u2500\u2500 NODE SELECTION \u2500\u2500 */
+/* ── NODE SELECTION ── */
 function selectNode(d, links) {
   hideTooltip();
   highlighted = d.id;
@@ -564,23 +564,23 @@ function selectNode(d, links) {
   const incoming = links.filter(l => (l.target.id || l.target) === d.id);
 
   document.getElementById('nd-scroll').innerHTML = `
-    <div class="nd-name">\ud83d\udcbb ${d.name}</div>
+    <div class="nd-name">💻 ${d.name}</div>
     <div class="nd-ip">${d.ip || 'No IP assigned'}</div>
-    <div class="nd-state ${d.power_state === 'poweredOn' ? 'ns-on' : 'ns-off'}">${d.power_state === 'poweredOn' ? '\u25cf Powered On' : '\u25cb Powered Off'}</div>
-    <div class="nd-kv"><span class="nd-k">vCPU</span><span class="nd-v">${d.vcpu || '\u2014'}</span></div>
-    <div class="nd-kv"><span class="nd-k">RAM</span><span class="nd-v">${d.ram_gb ? parseFloat(d.ram_gb).toFixed(1)+'GB' : '\u2014'}</span></div>
-    <div class="nd-kv"><span class="nd-k">OS</span><span class="nd-v" style="font-family:'Plus Jakarta Sans',sans-serif;font-size:11px">${d.guest_os || '\u2014'}</span></div>
+    <div class="nd-state ${d.power_state === 'poweredOn' ? 'ns-on' : 'ns-off'}">${d.power_state === 'poweredOn' ? '● Powered On' : '○ Powered Off'}</div>
+    <div class="nd-kv"><span class="nd-k">vCPU</span><span class="nd-v">${d.vcpu || '—'}</span></div>
+    <div class="nd-kv"><span class="nd-k">RAM</span><span class="nd-v">${d.ram_gb ? parseFloat(d.ram_gb).toFixed(1)+'GB' : '—'}</span></div>
+    <div class="nd-kv"><span class="nd-k">OS</span><span class="nd-v" style="font-family:'Plus Jakarta Sans',sans-serif;font-size:11px">${d.guest_os || '—'}</span></div>
     <div class="nd-kv"><span class="nd-k">Connections Out</span><span class="nd-v" style="color:var(--ok)">${outgoing.length}</span></div>
     <div class="nd-kv"><span class="nd-k">Connections In</span><span class="nd-v" style="color:var(--blue)">${incoming.length}</span></div>
     ${outgoing.length > 0 ? `<div class="nd-dep-title">Outgoing (${outgoing.length})</div>` +
       outgoing.map(l => {
         const tgt = graphData.nodes.find(n => n.id === (l.target.id || l.target));
-        return `<div class="nd-dep">\u2192 <span>${tgt?.name || l.target}</span><span class="nd-dep-port">:${l.port} ${l.protocol}</span><span class="nd-dep-flows">${l.flow_count}</span></div>`;
+        return `<div class="nd-dep">→ <span>${tgt?.name || l.target}</span><span class="nd-dep-port">:${l.port} ${l.protocol}</span><span class="nd-dep-flows">${l.flow_count}</span></div>`;
       }).join('') : ''}
     ${incoming.length > 0 ? `<div class="nd-dep-title">Incoming (${incoming.length})</div>` +
       incoming.map(l => {
         const src = graphData.nodes.find(n => n.id === (l.source.id || l.source));
-        return `<div class="nd-dep"><span>${src?.name || l.source}</span> \u2192 <span class="nd-dep-port">:${l.port} ${l.protocol}</span><span class="nd-dep-flows">${l.flow_count}</span></div>`;
+        return `<div class="nd-dep"><span>${src?.name || l.source}</span> → <span class="nd-dep-port">:${l.port} ${l.protocol}</span><span class="nd-dep-flows">${l.flow_count}</span></div>`;
       }).join('') : ''}
   `;
   document.getElementById('node-detail').classList.add('open');
@@ -597,7 +597,7 @@ function clearHighlight() {
 
 function closeNodeDetail() { document.getElementById('node-detail').classList.remove('open'); }
 
-/* \u2500\u2500 SEARCH HIGHLIGHT \u2500\u2500 */
+/* ── SEARCH HIGHLIGHT ── */
 function highlightVM(q) {
   if (!g || !q.trim()) { clearHighlight(); return; }
   const match = graphData?.nodes.find(n => n.name.toLowerCase().includes(q.toLowerCase()));
@@ -607,7 +607,7 @@ function highlightVM(q) {
   }
 }
 
-/* \u2500\u2500 FILTER \u2500\u2500 */
+/* ── FILTER ── */
 function setFilter(f) {
   currentFilter = f;
   ['all', 'TCP', 'UDP'].forEach(id => {
@@ -617,7 +617,7 @@ function setFilter(f) {
   initGraph();
 }
 
-/* \u2500\u2500 LAYOUT \u2500\u2500 */
+/* ── LAYOUT ── */
 function setLayout(l) {
   currentLayout = l;
   ['force', 'radial'].forEach(id => document.getElementById('btn-' + id).classList.toggle('act', id === l));

@@ -144,31 +144,31 @@ code{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text-3);}
   <div class="hdr-div"></div><span class="hdr-title">Infrastructure Intelligence</span>
   <div class="hdr-r">
     <div class="sys-ok"><div class="sys-dot"></div><span id="h-status">Monitoring</span></div>
-    <div class="clock" id="clock">\u2014</div>
-    <button class="theme-btn" onclick="toggleTheme()"><span id="ti">\ud83c\udf19</span></button>
+    <div class="clock" id="clock">—</div>
+    <button class="theme-btn" onclick="toggleTheme()"><span id="ti">🌙</span></button>
   </div>
 </header>
 
 <aside class="side">
   <div class="sec">
     <div class="sec-lbl">Navigation</div>
-    <a href="/" class="nav-a"><span class="nav-ic">\u2699\ufe0f</span>Configuration</a>
-    <a href="/status" class="nav-a act"><span class="nav-ic">\ud83d\udce1</span>Status Monitor</a>
-    <a href="/export" class="nav-a"><span class="nav-ic">\ud83d\udcca</span>Report Center</a>
+    <a href="/" class="nav-a"><span class="nav-ic">⚙️</span>Configuration</a>
+    <a href="/status" class="nav-a act"><span class="nav-ic">📡</span>Status Monitor</a>
+    <a href="/export" class="nav-a"><span class="nav-ic">📊</span>Report Center</a>
   </div>
   <div class="sec">
     <div class="sec-lbl">Live Metrics</div>
-    <div class="nav-a" style="cursor:default"><span class="nav-ic">\ud83d\udcbb</span>Virtual Machines<span class="nbadge" id="vm-b">\u2014</span></div>
-    <div class="nav-a" style="cursor:default"><span class="nav-ic">\ud83d\udda5\ufe0f</span>ESXi Hosts<span class="nbadge" id="ht-b">\u2014</span></div>
-    <div class="nav-a" style="cursor:default"><span class="nav-ic">\ud83d\udd17</span>Dependencies<span class="nbadge" id="dp-b">\u2014</span></div>
-    <div class="nav-a" style="cursor:default"><span class="nav-ic">\ud83d\udcf6</span>Flow Listener<span class="nbadge live">\u25cf LIVE</span></div>
+    <div class="nav-a" style="cursor:default"><span class="nav-ic">💻</span>Virtual Machines<span class="nbadge" id="vm-b">—</span></div>
+    <div class="nav-a" style="cursor:default"><span class="nav-ic">🖥️</span>ESXi Hosts<span class="nbadge" id="ht-b">—</span></div>
+    <div class="nav-a" style="cursor:default"><span class="nav-ic">🔗</span>Dependencies<span class="nbadge" id="dp-b">—</span></div>
+    <div class="nav-a" style="cursor:default"><span class="nav-ic">📶</span>Flow Listener<span class="nbadge live">● LIVE</span></div>
   </div>
   <div class="side-env">
     <div class="env-title">Environment Summary</div>
-    <div class="env-row"><span class="env-lbl">VMs Discovered</span><span class="env-val" id="e-vms">\u2014</span></div>
-    <div class="env-row"><span class="env-lbl">ESXi Hosts</span><span class="env-val" id="e-hts">\u2014</span></div>
-    <div class="env-row"><span class="env-lbl">Datastores</span><span class="env-val" id="e-ds">\u2014</span></div>
-    <div class="env-row"><span class="env-lbl">Mapped Flows</span><span class="env-val" id="e-dp">\u2014</span></div>
+    <div class="env-row"><span class="env-lbl">VMs Discovered</span><span class="env-val" id="e-vms">—</span></div>
+    <div class="env-row"><span class="env-lbl">ESXi Hosts</span><span class="env-val" id="e-hts">—</span></div>
+    <div class="env-row"><span class="env-lbl">Datastores</span><span class="env-val" id="e-ds">—</span></div>
+    <div class="env-row"><span class="env-lbl">Mapped Flows</span><span class="env-val" id="e-dp">—</span></div>
   </div>
   <div class="side-foot">
     <div class="side-foot-brand">TAO Digital Solutions</div>
@@ -179,28 +179,28 @@ code{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text-3);}
 <main class="main">
   <div class="ph">
     <div>
-      <div class="bc"><span>Platform</span><span class="bc-sep">\u203a</span><span class="bc-cur">Status Monitor</span></div>
+      <div class="bc"><span>Platform</span><span class="bc-sep">›</span><span class="bc-cur">Status Monitor</span></div>
       <h1 class="pg-title">Discovery Status</h1>
       <p class="pg-sub">Real-time engine telemetry and client environment dashboard</p>
     </div>
     <div style="display:flex;gap:8px;margin-top:8px">
-      <a href="/" class="btn btn-sec">\u2190 Configuration</a>
-      <a href="/export" class="btn btn-pri" id="export-btn" style="display:none">View Reports \u2192</a>
+      <a href="/" class="btn btn-sec">← Configuration</a>
+      <a href="/export" class="btn btn-pri" id="export-btn" style="display:none">View Reports →</a>
     </div>
   </div>
 
   <!-- STAT CARDS -->
   <div class="stats ai">
-    <div class="sc"><div class="sc-lbl">Virtual Machines</div><div class="sc-val" id="m-vms">\u2014</div><div class="sc-sub">With IP addresses</div></div>
-    <div class="sc"><div class="sc-lbl">ESXi Hosts</div><div class="sc-val" id="m-hts">\u2014</div><div class="sc-sub">Connected</div></div>
-    <div class="sc"><div class="sc-lbl">Dependencies</div><div class="sc-val" id="m-deps" style="color:var(--ok)">\u2014</div><div class="sc-sub">VM-to-VM flows</div></div>
+    <div class="sc"><div class="sc-lbl">Virtual Machines</div><div class="sc-val" id="m-vms">—</div><div class="sc-sub">With IP addresses</div></div>
+    <div class="sc"><div class="sc-lbl">ESXi Hosts</div><div class="sc-val" id="m-hts">—</div><div class="sc-sub">Connected</div></div>
+    <div class="sc"><div class="sc-lbl">Dependencies</div><div class="sc-val" id="m-deps" style="color:var(--ok)">—</div><div class="sc-sub">VM-to-VM flows</div></div>
     <div class="sc"><div class="sc-lbl">Engine State</div><div class="sc-val" id="m-state" style="font-size:16px;font-family:'Plus Jakarta Sans',sans-serif">Idle</div><div class="sc-sub" id="m-sub">Awaiting scan</div></div>
   </div>
 
   <!-- DISCOVERY PROGRESS CARD -->
   <div class="card ai" style="animation-delay:.05s">
     <div class="ch">
-      <div class="ch-ic">\ud83d\udd2c</div>
+      <div class="ch-ic">🔬</div>
       <div><div class="ct">Discovery Engine</div><div class="cs">vSphere API collection and NetFlow analysis pipeline</div></div>
       <div class="ch-right">
         <span class="badge b-inf" id="eng-badge">IDLE</span>
@@ -215,26 +215,26 @@ code{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text-3);}
       <div class="prog-status"><div class="prog-dot" id="prog-dot"></div><span id="prog-status">Configure vCenter credentials and run pre-flight check to begin</span></div>
     </div>
     <div class="phases">
-      <div class="phase" id="ph1"><div class="phase-ck">\u2713</div><div class="phase-icon">\ud83d\udd0c</div><div class="phase-lbl">vCenter Connect</div></div>
-      <div class="phase" id="ph2"><div class="phase-ck">\u2713</div><div class="phase-icon">\ud83d\udce1</div><div class="phase-lbl">NetFlow Setup</div></div>
-      <div class="phase" id="ph3"><div class="phase-ck">\u2713</div><div class="phase-icon">\ud83d\udcbb</div><div class="phase-lbl">VM Inventory</div></div>
-      <div class="phase" id="ph4"><div class="phase-ck">\u2713</div><div class="phase-icon">\ud83d\udd17</div><div class="phase-lbl">Flow Analysis</div></div>
-      <div class="phase" id="ph5"><div class="phase-ck">\u2713</div><div class="phase-icon">\u2705</div><div class="phase-lbl">Complete</div></div>
+      <div class="phase" id="ph1"><div class="phase-ck">✓</div><div class="phase-icon">🔌</div><div class="phase-lbl">vCenter Connect</div></div>
+      <div class="phase" id="ph2"><div class="phase-ck">✓</div><div class="phase-icon">📡</div><div class="phase-lbl">NetFlow Setup</div></div>
+      <div class="phase" id="ph3"><div class="phase-ck">✓</div><div class="phase-icon">💻</div><div class="phase-lbl">VM Inventory</div></div>
+      <div class="phase" id="ph4"><div class="phase-ck">✓</div><div class="phase-icon">🔗</div><div class="phase-lbl">Flow Analysis</div></div>
+      <div class="phase" id="ph5"><div class="phase-ck">✓</div><div class="phase-icon">✅</div><div class="phase-lbl">Complete</div></div>
     </div>
   </div>
 
   <!-- CLIENT ENVIRONMENT DASHBOARD -->
   <div class="card ai" style="animation-delay:.1s">
     <div class="ch">
-      <div class="ch-ic">\ud83c\udfe2</div>
+      <div class="ch-ic">🏢</div>
       <div><div class="ct">Client Environment Dashboard</div><div class="cs">Discovered infrastructure overview</div></div>
       <div class="ch-right">
-        <button class="btn btn-sec" style="padding:6px 12px;font-size:12px" onclick="loadDash()">\u21bb Refresh</button>
+        <button class="btn btn-sec" style="padding:6px 12px;font-size:12px" onclick="loadDash()">↻ Refresh</button>
       </div>
     </div>
     <div class="dash-grid" id="dash-grid">
       <div class="dash-cell" style="grid-column:1/-1">
-        <div class="empty"><div class="empty-ic">\ud83d\udd0d</div><div>Loading environment data...</div></div>
+        <div class="empty"><div class="empty-ic">🔍</div><div>Loading environment data...</div></div>
       </div>
     </div>
   </div>
@@ -242,23 +242,23 @@ code{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text-3);}
   <!-- DEPENDENCY FEED -->
   <div class="card ai" style="animation-delay:.15s">
     <div class="ch">
-      <div class="ch-ic">\ud83d\udd17</div>
+      <div class="ch-ic">🔗</div>
       <div><div class="ct">Application Dependency Map</div><div class="cs">Live VM-to-VM network flow analysis</div></div>
       <div class="ch-right">
-        <span class="badge b-live">\u25cf Live</span>
-        <button class="btn btn-sec" style="padding:6px 12px;font-size:12px" onclick="loadDeps()">\u21bb Refresh</button>
+        <span class="badge b-live">● Live</span>
+        <button class="btn btn-sec" style="padding:6px 12px;font-size:12px" onclick="loadDeps()">↻ Refresh</button>
       </div>
     </div>
     <div id="dep-body">
-      <div class="empty"><div class="empty-ic">\ud83d\udce1</div><div>Loading dependency data...</div></div>
+      <div class="empty"><div class="empty-ic">📡</div><div>Loading dependency data...</div></div>
     </div>
   </div>
 </main>
 </div>
 
 <script>
-const t=localStorage.getItem('tao-theme')||'light';document.documentElement.setAttribute('data-theme',t);document.getElementById('ti').textContent=t==='dark'?'\u2600\ufe0f':'\ud83c\udf19';
-function toggleTheme(){const c=document.documentElement.getAttribute('data-theme'),n=c==='dark'?'light':'dark';document.documentElement.setAttribute('data-theme',n);localStorage.setItem('tao-theme',n);document.getElementById('ti').textContent=n==='dark'?'\u2600\ufe0f':'\ud83c\udf19';}
+const t=localStorage.getItem('tao-theme')||'light';document.documentElement.setAttribute('data-theme',t);document.getElementById('ti').textContent=t==='dark'?'☀️':'🌙';
+function toggleTheme(){const c=document.documentElement.getAttribute('data-theme'),n=c==='dark'?'light':'dark';document.documentElement.setAttribute('data-theme',n);localStorage.setItem('tao-theme',n);document.getElementById('ti').textContent=n==='dark'?'☀️':'🌙';}
 function updateClock(){document.getElementById('clock').textContent=new Date().toUTCString().slice(0,-4).replace('GMT','UTC');}
 setInterval(updateClock,1000);updateClock();
 
@@ -287,7 +287,7 @@ async function pollStatus(){try{const r=await fetch('/api/status');const d=await
 
 async function fetchCounts(){
   try{const r=await fetch('/api/db_counts');const d=await r.json();
-    const v=d.vms??'\u2014',dp=d.deps??'\u2014',h=d.hosts??'\u2014',ds=d.datastores??'\u2014';
+    const v=d.vms??'—',dp=d.deps??'—',h=d.hosts??'—',ds=d.datastores??'—';
     ['vm-b','m-vms','e-vms'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=v;});
     ['dp-b','m-deps','e-dp'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=dp;});
     ['ht-b','m-hts','e-hts'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=h;});
@@ -313,18 +313,18 @@ async function loadDash(){
       <div class="dash-cell">
         <div class="dash-cell-title">Top Virtual Machines</div>
         <table><thead><tr><th>VM Name</th><th>State</th><th>IP Address</th></tr></thead><tbody>
-          ${(vd.vms||[]).slice(0,6).map(v=>`<tr><td><strong style="color:var(--text)">${v.vm_name}</strong></td><td>${v.power_state==='poweredOn'?'<span class="badge b-ok">\u25cf On</span>':'<span class="badge" style="background:var(--bg-alt);border:1px solid var(--border);color:var(--text-3)">\u25cb Off</span>'}</td><td><code>${v.ip_address||'\u2014'}</code></td></tr>`).join('')}
+          ${(vd.vms||[]).slice(0,6).map(v=>`<tr><td><strong style="color:var(--text)">${v.vm_name}</strong></td><td>${v.power_state==='poweredOn'?'<span class="badge b-ok">● On</span>':'<span class="badge" style="background:var(--bg-alt);border:1px solid var(--border);color:var(--text-3)">○ Off</span>'}</td><td><code>${v.ip_address||'—'}</code></td></tr>`).join('')}
         </tbody></table>
       </div>`;
-  }catch(e){document.getElementById('dash-grid').innerHTML='<div class="dash-cell" style="grid-column:1/-1"><div class="empty"><div class="empty-ic">\u26a0\ufe0f</div><div>Could not load environment data</div></div></div>';}
+  }catch(e){document.getElementById('dash-grid').innerHTML='<div class="dash-cell" style="grid-column:1/-1"><div class="empty"><div class="empty-ic">⚠️</div><div>Could not load environment data</div></div></div>';}
 }
 
 async function loadDeps(){
   try{
     const r=await fetch('/api/dependencies');const d=await r.json();
-    if(!d.deps||d.deps.length===0){document.getElementById('dep-body').innerHTML='<div class="empty"><div class="empty-ic">\ud83d\udce1</div><div>No dependencies captured yet \u2014 generate VM-to-VM traffic and ensure NetFlow is enabled on the vDS portgroups</div></div>';return;}
-    document.getElementById('dep-body').innerHTML=`<table><thead><tr><th>Source VM</th><th>Destination VM</th><th>Port</th><th>Protocol</th><th>Flows</th><th>Last Seen</th></tr></thead><tbody>${d.deps.map(dep=>`<tr><td><span class="vm-tag">\ud83d\udcbb ${dep.src_vm_name||dep.src_ip}</span></td><td><span class="vm-tag">\ud83d\udcbb ${dep.dst_vm_name||dep.dst_ip}</span></td><td><code>:${dep.dst_port}</code></td><td><span class="proto-${(dep.protocol||'').toLowerCase()}">${dep.protocol}</span></td><td><span class="flow-ct">${dep.flow_count}</span></td><td><code>${(dep.last_seen||'').slice(0,16)}</code></td></tr>`).join('')}</tbody></table>`;
-  }catch(e){document.getElementById('dep-body').innerHTML='<div class="empty"><div class="empty-ic">\u26a0\ufe0f</div><div>Could not load dependency data</div></div>';}
+    if(!d.deps||d.deps.length===0){document.getElementById('dep-body').innerHTML='<div class="empty"><div class="empty-ic">📡</div><div>No dependencies captured yet — generate VM-to-VM traffic and ensure NetFlow is enabled on the vDS portgroups</div></div>';return;}
+    document.getElementById('dep-body').innerHTML=`<table><thead><tr><th>Source VM</th><th>Destination VM</th><th>Port</th><th>Protocol</th><th>Flows</th><th>Last Seen</th></tr></thead><tbody>${d.deps.map(dep=>`<tr><td><span class="vm-tag">💻 ${dep.src_vm_name||dep.src_ip}</span></td><td><span class="vm-tag">💻 ${dep.dst_vm_name||dep.dst_ip}</span></td><td><code>:${dep.dst_port}</code></td><td><span class="proto-${(dep.protocol||'').toLowerCase()}">${dep.protocol}</span></td><td><span class="flow-ct">${dep.flow_count}</span></td><td><code>${(dep.last_seen||'').slice(0,16)}</code></td></tr>`).join('')}</tbody></table>`;
+  }catch(e){document.getElementById('dep-body').innerHTML='<div class="empty"><div class="empty-ic">⚠️</div><div>Could not load dependency data</div></div>';}
 }
 
 pollStatus();fetchCounts();loadDash();loadDeps();
