@@ -19,7 +19,6 @@ Legend: ✅ Done &nbsp;·&nbsp; 🟡 In progress &nbsp;·&nbsp; ⬜ Not started 
 | ✅ | Web UI | Flask on port 8443, `systemd`-managed, reachable and verified |
 | ✅ | SQLite schema | Initialized via `db_init.py` (currently empty — no scan run yet) |
 | ✅ | IPFIX listener | Running on UDP 4739, idle (no flows fed yet) |
-| ✅ | Icon/encoding bug | Fixed literal `\uXXXX` text rendering in 4 templates |
 
 **Next up**
 
