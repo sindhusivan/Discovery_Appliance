@@ -35,6 +35,31 @@ Legend: ✅ Done &nbsp;·&nbsp; 🟡 In progress &nbsp;·&nbsp; ⬜ Not started 
 
 Nothing beyond the one appliance VM has been touched in the lab vCenter — no vDS/NetFlow changes, no other VMs or resource pools affected.
 
+### Demo readiness tracker — target Thu, July 23, 2026
+
+Today: July 8, 2026 (15 days out). Owners below are a first pass — reassign as needed.
+
+| | Activity | Owner | Due | Priority |
+|:---:|---|:---:|---|:---:|
+| ⬜ | Add a dedicated/isolated test vDS to `ALLOWED_VDS` in `netflow_manager.py` | Akhil | Jul 10 | High |
+| ⬜ | Run first live discovery scan against lab vCenter; confirm DCs/clusters/hosts/VMs/datastores populate in SQLite | Sindhu | Jul 11 | High |
+| ⬜ | Validate NetFlow/IPFIX config end-to-end on the test vDS (collector actually receiving packets) | Akhil | Jul 11 | High |
+| ⬜ | Verify Dashboard tree view renders the collected inventory correctly | Sindhu | Jul 12 | High |
+| ⬜ | Generate VM-to-VM test traffic (ping/RDP/HTTP) between 2+ VMs on the IPFIX-enabled portgroup | Akhil | Jul 13 | High |
+| ⬜ | Confirm IPFIX flows land in `dependencies` table and render on the Dependencies graph page | Sindhu + Akhil | Jul 14 | High |
+| ⬜ | Generate a sample Excel report via Export page; validate formatting/branding/data accuracy | Sindhu | Jul 15 | High |
+| 🔒 | Move appliance SSH off root/password → key-based auth or dedicated service account | Akhil | Jul 16 | Medium |
+| 🔒 | Scope the vCenter service account down to read-only least-privilege (deployment guide appendix) | Akhil | Jul 17 | Medium |
+| ⬜ | End-to-end bug bash: re-run discovery, test empty/error states, confirm no regressions | Sindhu + Akhil | Jul 18 | Medium |
+| ⬜ | UI/UX pass on Dashboard & Dependencies pages ahead of the leadership demo | Sindhu | Jul 19 | Medium |
+| ⬜ | Prepare demo narrative/script and confirm the exact dataset to show live | Sindhu + Akhil | Jul 21 | High |
+| ⬜ | Full dry-run rehearsal of the demo end-to-end | Sindhu + Akhil | Jul 22 | High |
+| ⬜ | **Demo day — present to leadership** | Sindhu + Akhil | Jul 23 | — |
+
+**Not in scope for this demo** (Roadmap Phase 4/6 — future work, no code exists yet): wave-planning feature, repeatable installer packaging.
+
+**Sequencing note:** the discovery scan (inventory) doesn't depend on NetFlow, so the Jul 10–11 rows run in parallel — one person can validate inventory collection while the other sets up NetFlow on the test vDS.
+
 ## Architecture
 
 ```
