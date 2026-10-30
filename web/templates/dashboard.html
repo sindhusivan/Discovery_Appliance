@@ -20,7 +20,7 @@
   --inf:#2563EB; --inf-bg:#EFF6FF; --inf-b:#BFDBFE;
   --off-bg:#F1F5F9; --off-b:#CBD5E0; --off:#64748B;
   --sw:240px; --hh:60px; --r:10px; --rs:6px; --rl:14px;
-  --detail:360px;
+  --detail:0px;
 }
 [data-theme="dark"] {
   --bg:#0A0F1E; --bg-c:#111827; --bg-sb:#0D1525; --bg-hdr:#0D1525;
@@ -77,7 +77,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
 .ft-v{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--tx3);}
 
 /* ─── MAIN AREA (3-panel) ─── */
-.main{grid-row:2;display:grid;grid-template-columns:320px 1fr var(--detail);overflow:hidden;}
+.main{grid-row:2;display:grid;grid-template-columns:320px 1fr var(--detail);overflow:hidden;transition:grid-template-columns .2s ease;}
 
 /* ─── TREE PANEL ─── */
 .tree-panel{border-right:1px solid var(--bd);display:flex;flex-direction:column;overflow:hidden;background:var(--bg-c);}
@@ -125,7 +125,8 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
 .section-title{font-size:12px;font-weight:700;color:var(--tx3);letter-spacing:1px;text-transform:uppercase;margin:16px 0 8px;}
 
 /* ─── DETAIL PANEL ─── */
-.detail-panel{border-left:1px solid var(--bd);background:var(--bg-c);display:flex;flex-direction:column;overflow:hidden;}
+.detail-panel{background:var(--bg-c);display:flex;flex-direction:column;overflow:hidden;}
+.detail-panel.open{border-left:1px solid var(--bd);}
 .dp-hdr{padding:14px 16px;border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:10px;flex-shrink:0;}
 .dp-title{font-size:13px;font-weight:700;color:var(--tx);}
 .dp-close{margin-left:auto;cursor:pointer;color:var(--tx3);font-size:18px;line-height:1;transition:color .2s;background:none;border:none;}
@@ -520,6 +521,10 @@ async function selectVM(vm, host) {
   const vmRows = document.querySelectorAll(`[data-vm="${vm.vm_name}"]`);
   vmRows.forEach(r => r.classList.add('selected'));
 
+  // Open the detail panel
+  document.documentElement.style.setProperty('--detail', '360px');
+  document.getElementById('detail-panel').classList.add('open');
+
   document.getElementById('dp-title').textContent = '💻 VM Details';
   const on = vm.power_state === 'poweredOn';
 
@@ -569,6 +574,9 @@ function clearDetail() {
   clearSelected();
   document.getElementById('dp-scroll').innerHTML = `<div class="dp-empty"><div class="dp-ei">💻</div><div class="dp-et">Click a virtual machine<br>to view its details</div></div>`;
   document.getElementById('dp-title').textContent = 'VM Details';
+  // Close the detail panel
+  document.documentElement.style.setProperty('--detail', '0px');
+  document.getElementById('detail-panel').classList.remove('open');
 }
 
 /* ── OVERVIEW ── */

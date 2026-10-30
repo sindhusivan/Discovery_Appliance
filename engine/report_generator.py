@@ -7,11 +7,12 @@ import pandas as pd
 import sqlite3
 import os
 import openpyxl
+from pathlib import Path
 from openpyxl.styles import PatternFill, Font, Border, Side, Alignment
 from datetime import datetime
 
-DB_PATH = "/opt/discovery-appliance/data/discovery.db"
-REPORTS_DIR = "/opt/discovery-appliance/reports"
+DB_PATH = os.environ.get("DISCOVERY_DB_PATH", str(Path(__file__).resolve().parents[1] / "data" / "discovery.db"))
+REPORTS_DIR = os.environ.get("DISCOVERY_REPORTS_DIR", str(Path(__file__).resolve().parents[1] / "reports"))
 
 def generate_enterprise_excel():
     os.makedirs(REPORTS_DIR, exist_ok=True)

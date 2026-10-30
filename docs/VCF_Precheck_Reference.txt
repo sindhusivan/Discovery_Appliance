@@ -1,0 +1,168 @@
+VCF 9.x PRE-CHECK REFERENCE
+Compiled 2026-10-26 for the TAO Discovery Appliance team
+
+Broadcom does not publish one complete list of every VCF check. The full
+list (about 55 validations for a vCenter import, per William Lam) only
+appears inside the product UI or API. This file collects what public docs
+and KBs confirm, plus standard VCF requirements.
+
+  [C] = confirmed by a Broadcom KB/doc or a VCF engineer's blog (sources at bottom)
+  [R] = standard VCF requirement, not explicitly listed as a named check in
+        the sources -- verify against the product's own pre-check output
+
+Where VCF runs checks:
+  1. VCF Installer  -- before deploying a new fleet / management domain
+  2. VCF Import     -- before converting/importing an existing vCenter
+  3. SDDC Manager   -- before every upgrade (lifecycle pre-checks)
+
+
+===========================================================================
+1. VCF INSTALLER (new deployment) VALIDATIONS
+===========================================================================
+Tip [C]: the Installer can be used as a standalone pre-check tool. Deploy
+the appliance, connect it to a depot, skip downloading binaries -- the
+binary checks fail but every other check still runs. Save the JSON.
+
+DNS
+  [C] Forward DNS resolution of every generated FQDN
+  [R] Reverse (PTR) lookup for every FQDN / IP
+  [R] DNS servers reachable from ESXi hosts and the Installer
+
+NTP / time
+  [C] NTP configured and reachable
+  [R] Time in sync across ESXi hosts, Installer, and DNS/AD
+
+Networking
+  [C] 10GbE (or faster) physical NIC for management traffic
+      (VCF 9.0 default; lab-only unsupported bypass exists)
+  [R] VLAN IDs, subnets and gateways for management / vMotion / vSAN / TEP
+  [R] Gateways reachable; no IP conflicts in the supplied pools
+  [R] MTU / jumbo frames (typically 9000) end-to-end for vSAN, vMotion, TEP
+  [R] Enough free vmnics per host for the chosen vDS profile
+
+Host connectivity & ESXi
+  [C] Capacity assessment: CPU, memory, storage vs minimums
+  [C] Host connectivity from the Installer
+  [C] Software versions: ESXi build matches the VCF BOM
+  [R] SSH enabled, root credentials valid, certificate thumbprints accepted
+  [R] Hosts not already part of a vCenter / no stale config
+  [R] Hosts in a homogeneous hardware configuration within a cluster
+
+Storage
+  [C] vSAN ESA disk eligibility checked against the HCL file
+      (deployment halts if drives are missing or validation fails;
+       offline HCL update possible -- KB 442952 / 412606)
+  [C] Host HCL compatibility (false positives possible on ReadyNodes)
+  [C] NFS / VMkernel mount checks (false positives in 9.0.2, fixed in 9.1)
+
+Passwords / security
+  [C] Password policy compliance (length, complexity) for all accounts
+
+Depot / binaries
+  [C] Depot connection and compatibility metadata
+  [C] Required VCF / VVF binaries downloaded
+
+Overall
+  [C] Environment readiness summary
+
+
+===========================================================================
+2. VCF IMPORT / CONVERT (existing vCenter -> VCF) PRE-CHECKS
+===========================================================================
+How to run [C]:
+  - Mgmt domain conversion:  vcf_brownfield.py check  (read-only, makes no
+    changes to vCenter; remove the tool from the appliance afterwards)
+  - Workload domain import:  SDDC Manager API
+        POST /v1/sddcs/imports/validations           -> returns taskId
+        GET  /v1/sddcs/imports/validations/{taskId}  -> results
+    Each result carries Status, ImportanceLevel, Message, RemediationMessage.
+
+  [C] At least one cluster with more than one host
+      (single-host labs fail -- community report, VCF 9.0)
+  [C] dvPortgroups must not be associated with non-management traffic types
+      in the wrong way (KB 449685)
+  [C] If the vCenter VM runs inside another vCenter, its portgroup must
+      already be in SDDC Manager inventory
+  [C] NSX Manager FQDN/IP in the same subnet as vCenter
+  [C] Target NSX install image present in Lifecycle -> Install Binaries
+      (VCF 9.1, KB 448062)
+  [C] vCenter / objects not already present in SDDC Manager inventory
+      (InventoryAlreadyExistsException, KB 406458)
+  [R] vCenter and ESXi versions within the supported import matrix
+  [R] Hosts on vSphere Distributed Switch (standard switches not supported)
+  [R] Supported principal storage (vSAN, NFS, VMFS on FC)
+  [R] vCenter not in an unsupported Enhanced Linked Mode topology
+  [R] Clusters managed with vLCM images (not baselines) where required
+  [R] DRS / HA configuration supported; no unsupported host profiles
+  [R] No existing NSX deployment conflict
+  [R] DNS forward/reverse, NTP for vCenter and every host
+  NOTE [C]: import deploys the latest compatible NSX version, which can
+  later fall outside a supported upgrade path -- check before importing.
+
+
+===========================================================================
+3. SDDC MANAGER UPGRADE PRE-CHECKS
+===========================================================================
+vSAN (from Broadcom KB 400362, covers VCF 9.0 / 5.2)
+  [C] Overall cluster health (Skyline Health)
+  [C] Network health
+  [C] Network latency
+  [C] Encryption health / KMS connectivity
+  [C] Advanced configuration consistency
+  [C] Metadata integrity
+  [C] Disk group / controller firmware certification
+  NOTE [C]: a vSAN alert silenced in vCenter makes SDDC Manager skip the
+  matching pre-check.
+
+NSX
+  [C] All transport nodes (ESXi hosts) UP -- DEGRADED/DOWN blocks the
+      9.1 upgrade (KB 441372)
+  [C] Every NSX host known to SDDC Manager (KB 436452)
+  [C] ESXi hostnames are FQDNs, not shortnames
+      (set Misc.HostName / Misc.PreferredHostName)
+  [C] NSX planning-phase compatibility (KB 440910)
+
+ESXi / bundles
+  [C] Hosts can enter maintenance mode (pinned VMs cause failures;
+      LCM suppression setting is the workaround)
+  [C] Custom ISO and third-party VIB compatibility
+  [C] Version compatibility of the upgrade path (some NSX versions cannot
+      go to 9.0.0.0 -- do not start the upgrade)
+
+SDDC Manager / general
+  [R] SDDC Manager disk space and service health
+  [R] Password expiry for service accounts
+  [R] Certificate expiry
+  [R] Backup configured and recent
+  [R] DNS / NTP still healthy
+
+
+===========================================================================
+RELEVANCE TO THE DISCOVERY APPLIANCE
+===========================================================================
+Many [C]/[R] items can be evaluated from data we already collect:
+  - Cluster host count, ESXi versions/builds, host hardware homogeneity
+  - vDS vs standard switch, portgroups, NIC counts
+  - Datastore types (vSAN / NFS / VMFS)
+  - Host management IPs (DNS forward/reverse can be checked from the appliance)
+Candidate feature: a "VCF Readiness" page/sheet that flags these before a
+migration engagement.
+
+
+===========================================================================
+SOURCES
+===========================================================================
+https://williamlam.com/2026/05/vcf-9-1-quick-tip-using-the-vcf-installer-as-a-standalone-pre-check-tool.html
+https://williamlam.com/2025/06/disable-10gbe-nic-pre-check-in-the-vcf-9-0-installer.html
+https://williamlam.com/2025/12/automating-the-reporting-of-vcf-workload-domain-import-pre-check-validations.html
+https://davidring.ie/2026/07/28/vcf-9-1-on-dpc-1-4-walkthrough-part3-management-wld/
+https://knowledge.broadcom.com/external/article/442952/resolving-vcf-9-deployment-failures-disk.html
+https://knowledge.broadcom.com/external/article/412606/vcf-9-installer-fails-hcl-compatibility.html
+https://knowledge.broadcom.com/external/article/440983/error-vmkernel-and-nfs-mount-errors-duri.html
+https://knowledge.broadcom.com/external/article/449685/vcenter-import-prevalidation-fails-with.html
+https://knowledge.broadcom.com/external/article/448062/validation-fails-with-nsx-install-image.html
+https://knowledge.broadcom.com/external/article/406458/vcf-9-brownfield-import-fails-with-inven.html
+https://knowledge.broadcom.com/external/article/400362
+https://knowledge.broadcom.com/external/article/441372/sddc-manager-91-upgrade-fails-immediatel.html
+https://knowledge.broadcom.com/external/article/436452/sddc-manager-nsx-upgrade-precheck-fails.html
+https://knowledge.broadcom.com/external/article/440910/upgrading-vcf-to-91-failed-on-nsx-planni.html

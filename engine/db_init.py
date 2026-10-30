@@ -7,9 +7,10 @@ Flask API and report generator. Safe to re-run (CREATE TABLE IF NOT EXISTS).
 import sqlite3
 import os
 import logging
+from pathlib import Path
 
 logger = logging.getLogger("db_init")
-DB_PATH = "/opt/discovery-appliance/data/discovery.db"
+DB_PATH = os.environ.get("DISCOVERY_DB_PATH", str(Path(__file__).resolve().parents[1] / "data" / "discovery.db"))
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS datacenters (

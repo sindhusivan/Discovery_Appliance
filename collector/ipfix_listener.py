@@ -14,14 +14,15 @@ import struct
 import sqlite3
 import logging
 import os
+from pathlib import Path
 from datetime import datetime
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("ipfix-listener")
 
 LISTEN_PORT = 4739
-DB_PATH = "/opt/discovery-appliance/data/discovery.db"
-LOG_PATH = "/opt/discovery-appliance/logs/ipfix-listener.log"
+DB_PATH = os.environ.get("DISCOVERY_DB_PATH", str(Path(__file__).resolve().parents[1] / "data" / "discovery.db"))
+LOG_PATH = os.environ.get("DISCOVERY_LOG_PATH", str(Path(__file__).resolve().parents[1] / "logs" / "ipfix-listener.log"))
 
 # IPFIX Information Element IDs we care about (RFC 5102 / IANA IPFIX registry)
 IE_SRC_IPV4 = 8

@@ -1,7 +1,17 @@
-import sys, os, secrets, logging, threading, time, subprocess, sqlite3
-from flask import Flask, render_template, request, jsonify, send_from_directory, redirect
+import sys, os, secrets, hmac, logging, threading, time, subprocess, sqlite3
+from datetime import timedelta
+from functools import wraps
+from pathlib import Path
+from flask import Flask, render_template, request, jsonify, send_from_directory, redirect, session
 
-sys.path.append('/opt/discovery-appliance/engine')
+BASE_DIR = Path(__file__).resolve().parent.parent
+ENGINE_DIR = BASE_DIR / "engine"
+COLLECTOR_DIR = BASE_DIR / "collector"
+DATA_DIR = BASE_DIR / "data"
+REPORTS_DIR = BASE_DIR / "reports"
+LOG_DIR = BASE_DIR / "logs"
+
+sys.path.insert(0, str(ENGINE_DIR))
 from inventory_collector import run_full_discovery
 from report_generator import generate_enterprise_excel
 from netflow_manager import preflight_check_and_backup, execute_netflow_override, execute_netflow_rollback
@@ -12,41 +22,99 @@ logger = logging.getLogger("discovery-app")
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = os.environ.get("DISCOVERY_SECRET_KEY") or secrets.token_hex(32)
-DB_PATH = '/opt/discovery-appliance/data/discovery.db'
+app.permanent_session_lifetime = timedelta(hours=8)
+DB_PATH = os.environ.get("DISCOVERY_DB_PATH", str(DATA_DIR / "discovery.db"))
 init_db(DB_PATH)
+
+ADMIN_USERNAME = os.environ.get("DISCOVERY_ADMIN_USER", "admin")
+ADMIN_PASSWORD = os.environ.get("DISCOVERY_ADMIN_PASSWORD")
+if not ADMIN_PASSWORD:
+    # No known default: generate a one-off password so a fresh appliance is never
+    # reachable with "changeme". deploy/install.sh sets a persistent one.
+    ADMIN_PASSWORD = secrets.token_urlsafe(12)
+    logger.warning(f"DISCOVERY_ADMIN_PASSWORD not set; temporary admin password: {ADMIN_PASSWORD}")
 
 discovery_state = {
     "status": "Idle", "progress": 0,
     "running": False, "error": None
 }
 
+def login_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        if not session.get("logged_in"):
+            if request.path.startswith("/api/"):
+                return jsonify({"error": "Not authenticated"}), 401
+            return redirect("/login")
+        return f(*args, **kwargs)
+    return decorated
+
+def vcenter_required(f):
+    """Gates anything that shows discovered data behind an actual vCenter
+    connection made THIS session (set in api_preflight on success) — not just
+    whether the appliance has ever discovered anything historically."""
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        if not session.get("logged_in"):
+            if request.path.startswith("/api/"):
+                return jsonify({"error": "Not authenticated"}), 401
+            return redirect("/login")
+        if not session.get("vcenter_connected"):
+            if request.path.startswith("/api/"):
+                return jsonify({"error": "No vCenter connection established this session"}), 403
+            return redirect("/config")
+        return f(*args, **kwargs)
+    return decorated
+
+# ─────────────────────────────────────────────────────────────
+#  AUTH
+# ─────────────────────────────────────────────────────────────
+
+@app.route("/login", methods=["GET", "POST"])
+def login_page():
+    error = None
+    if request.method == "POST":
+        user_ok = hmac.compare_digest(request.form.get("username", "").encode(), ADMIN_USERNAME.encode())
+        pw_ok = hmac.compare_digest(request.form.get("password", "").encode(), ADMIN_PASSWORD.encode())
+        if user_ok and pw_ok:
+            session.permanent = True
+            session["logged_in"] = True
+            return redirect("/")
+        error = "Invalid username or password"
+    return render_template("login.html", error=error)
+
+@app.route("/logout")
+def logout():
+    session.clear()
+    return redirect("/login")
+
 # ─────────────────────────────────────────────────────────────
 #  PAGE ROUTES
 # ─────────────────────────────────────────────────────────────
 
 @app.route("/")
+@login_required
 def root():
-    try:
-        conn = sqlite3.connect(DB_PATH)
-        count = conn.execute("SELECT COUNT(*) FROM virtual_machines").fetchone()[0]
-        conn.close()
-        return redirect('/dashboard' if count > 0 else '/config')
-    except:
-        return redirect('/config')
+    return redirect('/dashboard' if session.get('vcenter_connected') else '/config')
 
 @app.route("/config")
+@login_required
 def config_page(): return render_template("config.html")
 
 @app.route("/dashboard")
+@vcenter_required
 def dashboard_page(): return render_template("dashboard.html")
 
 @app.route("/dependencies")
+@vcenter_required
 def dependencies_page(): return render_template("dependencies.html")
 
 @app.route("/status")
+@vcenter_required
 def status_page(): return render_template("status.html")
 
 @app.route("/export")
+@vcenter_required
 def export_page(): return render_template("export.html")
 
 # ─────────────────────────────────────────────────────────────
@@ -54,9 +122,11 @@ def export_page(): return render_template("export.html")
 # ─────────────────────────────────────────────────────────────
 
 @app.route("/api/status")
+@login_required
 def api_status(): return jsonify(discovery_state)
 
 @app.route("/api/db_counts")
+@vcenter_required
 def api_db_counts():
     try:
         conn = sqlite3.connect(DB_PATH)
@@ -74,6 +144,7 @@ def api_db_counts():
 # ─────────────────────────────────────────────────────────────
 
 @app.route("/api/tree")
+@vcenter_required
 def api_tree():
     try:
         conn = sqlite3.connect(DB_PATH)
@@ -147,6 +218,7 @@ def api_tree():
 # ─────────────────────────────────────────────────────────────
 
 @app.route("/api/graph")
+@vcenter_required
 def api_graph():
     try:
         conn = sqlite3.connect(DB_PATH)
@@ -224,6 +296,7 @@ def api_graph():
 # ─────────────────────────────────────────────────────────────
 
 @app.route("/api/dependencies")
+@vcenter_required
 def api_dependencies():
     try:
         conn = sqlite3.connect(DB_PATH)
@@ -247,6 +320,7 @@ def api_dependencies():
 # ─────────────────────────────────────────────────────────────
 
 @app.route("/api/vm_preview")
+@vcenter_required
 def api_vm_preview():
     try:
         conn = sqlite3.connect(DB_PATH)
@@ -266,18 +340,21 @@ def api_vm_preview():
 # ─────────────────────────────────────────────────────────────
 
 @app.route("/api/preflight", methods=["POST"])
+@login_required
 def api_preflight():
     data = request.json
     try:
         report = preflight_check_and_backup(
             data.get("vcenter_ip"), data.get("username"),
             data.get("password"), data.get("disable_ssl", False))
+        session["vcenter_connected"] = True
         return jsonify({"status": "success", "report": report})
     except Exception as e:
         logger.error(f"Preflight error: {e}")
         return jsonify({"status": "error", "error": str(e)}), 500
 
 @app.route("/api/start_discovery", methods=["POST"])
+@login_required
 def api_start_discovery():
     global discovery_state
     if discovery_state["running"]:
@@ -302,7 +379,7 @@ def discovery_worker(host, user, password, disable_ssl):
         discovery_state.update({"status": "Warming up NetFlow listener...", "progress": 15})
         try:
             listener_proc = subprocess.Popen(
-                ["python3", "/opt/discovery-appliance/collector/ipfix_listener.py"])
+                [sys.executable, str(COLLECTOR_DIR / "ipfix_listener.py")])
             time.sleep(3)
         except Exception as e:
             logger.warning(f"Inline listener warning: {e}")
@@ -339,6 +416,7 @@ def discovery_worker(host, user, password, disable_ssl):
 # ─────────────────────────────────────────────────────────────
 
 @app.route("/api/generate_reports", methods=["POST"])
+@vcenter_required
 def api_generate_reports():
     try:
         excel_path = generate_enterprise_excel()
@@ -350,8 +428,9 @@ def api_generate_reports():
         return jsonify({"error": str(e)}), 500
 
 @app.route("/download/<filename>")
+@vcenter_required
 def download_file(filename):
-    return send_from_directory('/opt/discovery-appliance/reports/', filename, as_attachment=True)
+    return send_from_directory(str(REPORTS_DIR), filename, as_attachment=True)
 
 # ─────────────────────────────────────────────────────────────
 #  RUN

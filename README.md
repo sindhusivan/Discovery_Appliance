@@ -10,7 +10,7 @@ Agentless VMware vSphere discovery and application-dependency mapping appliance,
 
 Legend: ✅ Done &nbsp;·&nbsp; 🟡 In progress &nbsp;·&nbsp; ⬜ Not started &nbsp;·&nbsp; 🔒 Security follow-up
 
-**Deployed & verified** — lab instance at `m1-vc.taodigital.lab`, resource pool `TAOAssess360`
+**Deployed & verified** — appliance VM `DiscoveryAppliance-Build-v1` at `http://10.1.107.51:8443` on vCenter `m1-vc.taodigital.lab` (pool `AIM - Migration`, folder `Innovation`, VLAN 107). Rebuilt 2026-10-30 from the Photon 5.0 OVA after the original VM was deleted.
 
 | | Item | Detail |
 |:---:|---|---|

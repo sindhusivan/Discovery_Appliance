@@ -188,6 +188,7 @@ tbody tr:hover td{background:var(--bg-hover);}
     <div class="sys-ok"><div class="sys-dot"></div>System Online</div>
     <div class="clock" id="clock">—</div>
     <button class="theme-btn" onclick="toggleTheme()" title="Toggle theme"><span id="ti">🌙</span></button>
+    <a class="theme-btn" href="/logout" title="Sign out" style="text-decoration:none;">↪</a>
   </div>
 </header>
 
@@ -241,7 +242,7 @@ tbody tr:hover td{background:var(--bg-hover);}
       <div class="fg">
         <div class="fgr full">
           <label class="flbl">vCenter Server (IP or FQDN) <span class="req">required</span></label>
-          <input class="fi" type="text" id="vcenter_ip" placeholder="m1-vcs.taodigital.lab or 172.16.x.x">
+          <input class="fi" type="text" id="vcenter_ip" placeholder="zvcfvc01.taodigital.lab or 10.1.101.62">
           <span class="fhint">The FQDN or IP address of the vCenter Server appliance</span>
         </div>
         <div class="fgr">
@@ -308,7 +309,8 @@ function toggleTheme(){const c=document.documentElement.getAttribute('data-theme
 function updateClock(){document.getElementById('clock').textContent=new Date().toUTCString().slice(0,-4).replace('GMT','UTC');}
 setInterval(updateClock,1000);updateClock();
 async function fetchCounts(){try{const r=await fetch('/api/db_counts'),d=await r.json();const v=d.vms??'—',dp=d.deps??'—',h=d.hosts??'—',ds=d.datastores??'—';['vm-b','m-vms','e-vms'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=v;});['dp-b','m-deps','e-dp'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=dp;});['ht-b','e-hts'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=h;});const ed=document.getElementById('e-ds');if(ed)ed.textContent=ds;}catch(e){}}
-fetchCounts();setInterval(fetchCounts,20000);
+// Numbers stay hidden ('—') until a vCenter connection has actually been made this session —
+// see runPreflight() below, which starts fetchCounts() only after a successful pre-flight.
 function clearForm(){['vcenter_ip','username','password'].forEach(i=>document.getElementById(i).value='');document.getElementById('ssl_chk').checked=false;document.getElementById('pf-sec').style.display='none';showF('','');}
 function showF(m,t){const e=document.getElementById('fmsg');e.className='flash '+(t||'');e.textContent=m;}
 async function runPreflight(){
@@ -316,7 +318,9 @@ async function runPreflight(){
   if(!host||!user||!pass){showF('Please complete all required fields before running the pre-flight check.','err');return;}
   const btn=document.getElementById('pf-btn');btn.innerHTML='<div class="sp"></div>Scanning vCenter...';btn.disabled=true;showF('','');
   try{const r=await fetch('/api/preflight',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({vcenter_ip:host,username:user,password:pass,disable_ssl:ssl})});const d=await r.json();
-    if(d.status==='success'){document.getElementById('pf-body').innerHTML=d.report.map(r=>`<tr><td><strong>${r.vds_name}</strong></td><td>${r.is_in_use?'<span class="badge b-ok">● Active</span>':'<span class="badge b-warn">○ Inactive</span>'}</td><td><code style="font-family:JetBrains Mono,monospace;font-size:12px;color:var(--text-3)">${r.current_collector_ip||'—'}</code></td><td>${r.will_be_modified?'<span class="badge b-inf">✓ Will configure</span>':'<span class="badge b-navy">🔒 Protected</span>'}</td></tr>`).join('');const ps=document.getElementById('pf-sec');ps.style.display='block';ps.scrollIntoView({behavior:'smooth'});}
+    if(d.status==='success'){document.getElementById('pf-body').innerHTML=d.report.map(r=>`<tr><td><strong>${r.vds_name}</strong></td><td>${r.is_in_use?'<span class="badge b-ok">● Active</span>':'<span class="badge b-warn">○ Inactive</span>'}</td><td><code style="font-family:JetBrains Mono,monospace;font-size:12px;color:var(--text-3)">${r.current_collector_ip||'—'}</code></td><td>${r.will_be_modified?'<span class="badge b-inf">✓ Will configure</span>':'<span class="badge b-navy">🔒 Protected</span>'}</td></tr>`).join('');const ps=document.getElementById('pf-sec');ps.style.display='block';ps.scrollIntoView({behavior:'smooth'});
+      // A real vCenter connection just succeeded this session — now it's OK to reveal live counts.
+      fetchCounts();setInterval(fetchCounts,20000);}
     else showF('Pre-flight failed: '+d.error,'err');
   }catch(e){showF('Connection error: '+e.message,'err');}
   finally{btn.innerHTML='Run Pre-Flight Check →';btn.disabled=false;}

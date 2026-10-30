@@ -21,3 +21,6 @@ reports/*.xlsx
 .DS_Store
 Thumbs.db
 .vscode/
+
+# Build output
+dist/

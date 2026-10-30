@@ -14,6 +14,7 @@ import logging
 import os
 import socket
 import time
+from pathlib import Path
 
 from pyVmomi import vim
 from vcenter_connect import get_service_instance, close as close_si
@@ -23,10 +24,10 @@ logger = logging.getLogger("netflow_manager")
 # Only vDS switches listed here (by name) will ever be modified.
 # Add the name of a dedicated, isolated test/lab vDS before the NetFlow
 # validation phase. Never add a production distributed switch.
-ALLOWED_VDS = []
+ALLOWED_VDS = ['Discovery-Test-vDS01', 'Discovery-NetFlow-vDS']
 
 COLLECTOR_PORT = 4739
-BACKUP_PATH = "/opt/discovery-appliance/data/netflow_backup.json"
+BACKUP_PATH = os.environ.get("DISCOVERY_NETFLOW_BACKUP_PATH", str(Path(__file__).resolve().parents[1] / "data" / "netflow_backup.json"))
 
 
 def _get_local_ip():
@@ -111,7 +112,8 @@ def execute_netflow_override(vcenter_ip, username, password, disable_ssl=False):
                 "samplingRate": existing.samplingRate if existing else 0,
             }
 
-            spec = vim.dvs.VmwareDistributedVirtualSwitch.VmwareConfigSpec()
+            # pyVmomi 9.x dropped the "Vmware" prefix on this nested type (was VmwareConfigSpec)
+            spec = vim.dvs.VmwareDistributedVirtualSwitch.ConfigSpec()
             spec.configVersion = vds.config.configVersion
             spec.ipfixConfig = vim.dvs.VmwareDistributedVirtualSwitch.IpfixConfig()
             spec.ipfixConfig.collectorIpAddress = collector_ip
@@ -151,7 +153,8 @@ def execute_netflow_rollback(vcenter_ip, username, password, disable_ssl=False):
             vds = _find_vds(content, name)
             if not vds:
                 continue
-            spec = vim.dvs.VmwareDistributedVirtualSwitch.VmwareConfigSpec()
+            # pyVmomi 9.x dropped the "Vmware" prefix on this nested type (was VmwareConfigSpec)
+            spec = vim.dvs.VmwareDistributedVirtualSwitch.ConfigSpec()
             spec.configVersion = vds.config.configVersion
             spec.ipfixConfig = vim.dvs.VmwareDistributedVirtualSwitch.IpfixConfig()
             spec.ipfixConfig.collectorIpAddress = cfg["collectorIpAddress"]

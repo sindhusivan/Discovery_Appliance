@@ -6,11 +6,12 @@ Key fix: reads vmk0 IP from host.config.network.vnic — never uses managementSe
 
 import sqlite3, os, logging
 from datetime import datetime
+from pathlib import Path
 from pyVmomi import vim
 from vcenter_connect import get_service_instance, close as close_si
 
 logger = logging.getLogger("inventory_collector")
-DB_PATH = "/opt/discovery-appliance/data/discovery.db"
+DB_PATH = os.environ.get("DISCOVERY_DB_PATH", str(Path(__file__).resolve().parents[1] / "data" / "discovery.db"))
 
 def get_host_management_ip(host):
     """
